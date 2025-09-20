@@ -6,7 +6,9 @@ import java.util.Optional;
 
 public interface MaterialRequestService {
     MaterialRequest save(MaterialRequest materialRequest);
-    Optional<MaterialRequest> findById(Long id);
+    MaterialRequest findById(Long id);
     List<MaterialRequest> findAll();
     void deleteById(Long id);
+    MaterialRequest approve(Long id);
+    MaterialRequest reject(Long id);
 }

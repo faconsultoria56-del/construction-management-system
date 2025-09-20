@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public interface PartnerService {
     Partner save(Partner partner);
-    Optional<Partner> findById(Long id);
+    Partner findById(Long id);
     List<Partner> findAll();
     void deleteById(Long id);
 }

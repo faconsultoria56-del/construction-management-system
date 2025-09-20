@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public interface FinanceService {
     FinanceTransaction save(FinanceTransaction financeTransaction);
-    Optional<FinanceTransaction> findById(Long id);
+    FinanceTransaction findById(Long id);
     List<FinanceTransaction> findAll();
     void deleteById(Long id);
 }

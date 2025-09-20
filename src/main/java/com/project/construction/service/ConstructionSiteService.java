@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public interface ConstructionSiteService {
     ConstructionSite save(ConstructionSite constructionSite);
-    Optional<ConstructionSite> findById(Long id);
+    ConstructionSite findById(Long id);
     List<ConstructionSite> findAll();
     void deleteById(Long id);
 }

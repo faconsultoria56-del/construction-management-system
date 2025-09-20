@@ -29,9 +29,8 @@ public class ConstructionSiteController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ConstructionSiteResponse> getConstructionSiteById(@PathVariable Long id) {
-        Optional<ConstructionSite> site = constructionSiteService.findById(id);
-        return site.map(s -> ResponseEntity.ok(toResponse(s)))
-                   .orElseGet(() -> ResponseEntity.notFound().build());
+        ConstructionSite site = constructionSiteService.findById(id);
+        return ResponseEntity.ok(toResponse(site));
     }
 
     @GetMapping
@@ -43,27 +42,18 @@ public class ConstructionSiteController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ConstructionSiteResponse> updateConstructionSite(@PathVariable Long id, @RequestBody ConstructionSiteRequest siteRequest) {
-        Optional<ConstructionSite> siteOptional = constructionSiteService.findById(id);
-        if (siteOptional.isPresent()) {
-            ConstructionSite site = siteOptional.get();
-            site.setName(siteRequest.getName());
-            site.setLocation(siteRequest.getLocation());
-            site.setStartDate(siteRequest.getStartDate());
-            site.setEndDate(siteRequest.getEndDate());
-            return ResponseEntity.ok(toResponse(constructionSiteService.save(site)));
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        ConstructionSite site = constructionSiteService.findById(id);
+        site.setName(siteRequest.getName());
+        site.setLocation(siteRequest.getLocation());
+        site.setStartDate(siteRequest.getStartDate());
+        site.setEndDate(siteRequest.getEndDate());
+        return ResponseEntity.ok(toResponse(constructionSiteService.save(site)));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteConstructionSite(@PathVariable Long id) {
-        if (constructionSiteService.findById(id).isPresent()) {
-            constructionSiteService.deleteById(id);
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        constructionSiteService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 
     private ConstructionSite toEntity(ConstructionSiteRequest request) {

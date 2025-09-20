@@ -4,6 +4,7 @@ import com.project.construction.api.dto.request.MaterialRequestRequest;
 import com.project.construction.api.dto.response.ConstructionSiteResponse;
 import com.project.construction.api.dto.response.EmployeeResponse;
 import com.project.construction.api.dto.response.MaterialRequestResponse;
+import com.project.construction.exception.MaterialApprovalException;
 import com.project.construction.model.ConstructionSite;
 import com.project.construction.model.Employee;
 import com.project.construction.model.MaterialRequest;
@@ -12,8 +13,6 @@ import com.project.construction.service.EmployeeService;
 import com.project.construction.service.MaterialRequestService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/material-requests")
@@ -39,50 +38,36 @@ public class MaterialRequestController {
 
     @GetMapping("/{id}")
     public ResponseEntity<MaterialRequestResponse> getMaterialRequestById(@PathVariable Long id) {
-        Optional<MaterialRequest> materialRequest = materialRequestService.findById(id);
-        return materialRequest.map(mr -> ResponseEntity.ok(toResponse(mr)))
-                              .orElseGet(() -> ResponseEntity.notFound().build());
+        MaterialRequest materialRequest = materialRequestService.findById(id);
+        return ResponseEntity.ok(toResponse(materialRequest));
     }
 
     @GetMapping("/{id}/status")
     public ResponseEntity<String> getMaterialRequestStatus(@PathVariable Long id) {
-        Optional<MaterialRequest> materialRequest = materialRequestService.findById(id);
-        return materialRequest.map(request -> ResponseEntity.ok(request.getStatus()))
-                              .orElseGet(() -> ResponseEntity.notFound().build());
+        MaterialRequest materialRequest = materialRequestService.findById(id);
+        return ResponseEntity.ok(materialRequest.getStatus());
     }
 
     @PostMapping("/{id}/approve")
     public ResponseEntity<MaterialRequestResponse> approveMaterialRequest(@PathVariable Long id) {
-        Optional<MaterialRequest> requestOptional = materialRequestService.findById(id);
-        if (requestOptional.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        MaterialRequest request = requestOptional.get();
-        request.setStatus("APPROVED");
-        return ResponseEntity.ok(toResponse(materialRequestService.save(request)));
+        MaterialRequest updatedRequest = materialRequestService.approve(id);
+        return ResponseEntity.ok(toResponse(updatedRequest));
     }
 
     @PostMapping("/{id}/reject")
     public ResponseEntity<MaterialRequestResponse> rejectMaterialRequest(@PathVariable Long id) {
-        Optional<MaterialRequest> requestOptional = materialRequestService.findById(id);
-        if (requestOptional.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        MaterialRequest request = requestOptional.get();
-        request.setStatus("REJECTED");
-        return ResponseEntity.ok(toResponse(materialRequestService.save(request)));
+        MaterialRequest updatedRequest = materialRequestService.reject(id);
+        return ResponseEntity.ok(toResponse(updatedRequest));
     }
 
     private MaterialRequest toEntity(MaterialRequestRequest requestDto) {
         MaterialRequest materialRequest = new MaterialRequest();
         materialRequest.setStatus(requestDto.getStatus());
 
-        ConstructionSite site = constructionSiteService.findById(requestDto.getConstructionSiteId())
-                .orElseThrow(() -> new RuntimeException("ConstructionSite not found with id: " + requestDto.getConstructionSiteId()));
+        ConstructionSite site = constructionSiteService.findById(requestDto.getConstructionSiteId());
         materialRequest.setConstructionSite(site);
 
-        Employee employee = employeeService.findById(requestDto.getRequestedByEmployeeId())
-                .orElseThrow(() -> new RuntimeException("Employee not found with id: " + requestDto.getRequestedByEmployeeId()));
+        Employee employee = employeeService.findById(requestDto.getRequestedByEmployeeId());
         materialRequest.setRequestedBy(employee);
 
         return materialRequest;

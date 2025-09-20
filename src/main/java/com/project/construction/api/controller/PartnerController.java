@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -29,9 +28,8 @@ public class PartnerController {
 
     @GetMapping("/{id}")
     public ResponseEntity<PartnerResponse> getPartnerById(@PathVariable Long id) {
-        Optional<Partner> partner = partnerService.findById(id);
-        return partner.map(p -> ResponseEntity.ok(toResponse(p)))
-                      .orElseGet(() -> ResponseEntity.notFound().build());
+        Partner partner = partnerService.findById(id);
+        return ResponseEntity.ok(toResponse(partner));
     }
 
     @GetMapping
@@ -43,26 +41,17 @@ public class PartnerController {
 
     @PutMapping("/{id}")
     public ResponseEntity<PartnerResponse> updatePartner(@PathVariable Long id, @RequestBody PartnerRequest partnerRequest) {
-        Optional<Partner> partnerOptional = partnerService.findById(id);
-        if (partnerOptional.isPresent()) {
-            Partner partner = partnerOptional.get();
-            partner.setName(partnerRequest.getName());
-            partner.setCpf(partnerRequest.getCpf());
-            partner.setOwnershipPercentage(partnerRequest.getOwnershipPercentage());
-            return ResponseEntity.ok(toResponse(partnerService.save(partner)));
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        Partner partner = partnerService.findById(id);
+        partner.setName(partnerRequest.getName());
+        partner.setCpf(partnerRequest.getCpf());
+        partner.setOwnershipPercentage(partnerRequest.getOwnershipPercentage());
+        return ResponseEntity.ok(toResponse(partnerService.save(partner)));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePartner(@PathVariable Long id) {
-        if (partnerService.findById(id).isPresent()) {
-            partnerService.deleteById(id);
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        partnerService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 
     private Partner toEntity(PartnerRequest request) {

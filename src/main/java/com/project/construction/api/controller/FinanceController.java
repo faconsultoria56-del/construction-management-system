@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -41,22 +40,14 @@ public class FinanceController {
 
     @PostMapping("/transactions/{id}/approve")
     public ResponseEntity<FinanceTransactionResponse> approveTransaction(@PathVariable Long id) {
-        Optional<FinanceTransaction> transactionOptional = financeService.findById(id);
-        if (transactionOptional.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        FinanceTransaction transaction = transactionOptional.get();
+        FinanceTransaction transaction = financeService.findById(id);
         transaction.setStatus("APPROVED");
         return ResponseEntity.ok(toResponse(financeService.save(transaction)));
     }
 
     @PostMapping("/transactions/{id}/release")
     public ResponseEntity<FinanceTransactionResponse> releaseTransaction(@PathVariable Long id) {
-        Optional<FinanceTransaction> transactionOptional = financeService.findById(id);
-        if (transactionOptional.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        FinanceTransaction transaction = transactionOptional.get();
+        FinanceTransaction transaction = financeService.findById(id);
         transaction.setStatus("RELEASED");
         return ResponseEntity.ok(toResponse(financeService.save(transaction)));
     }
@@ -68,8 +59,7 @@ public class FinanceController {
         transaction.setDate(request.getDate());
         transaction.setStatus(request.getStatus());
 
-        Employee employee = employeeService.findById(request.getEmployeeId())
-                .orElseThrow(() -> new RuntimeException("Employee not found with id: " + request.getEmployeeId()));
+        Employee employee = employeeService.findById(request.getEmployeeId());
         transaction.setEmployee(employee);
 
         return transaction;

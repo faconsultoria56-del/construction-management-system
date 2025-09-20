@@ -1,5 +1,6 @@
 package com.project.construction.service.impl;
 
+import com.project.construction.exception.ResourceNotFoundException;
 import com.project.construction.model.Employee;
 import com.project.construction.repository.EmployeeRepository;
 import com.project.construction.service.EmployeeService;
@@ -27,8 +28,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Optional<Employee> findById(Long id) {
-        return employeeRepository.findById(id);
+    public Employee findById(Long id) {
+        return employeeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Employee not found with id: " + id));
     }
 
     @Override

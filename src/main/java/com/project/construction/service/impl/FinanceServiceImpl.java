@@ -1,5 +1,6 @@
 package com.project.construction.service.impl;
 
+import com.project.construction.exception.ResourceNotFoundException;
 import com.project.construction.model.FinanceTransaction;
 import com.project.construction.repository.FinanceTransactionRepository;
 import com.project.construction.service.FinanceService;
@@ -23,8 +24,9 @@ public class FinanceServiceImpl implements FinanceService {
     }
 
     @Override
-    public Optional<FinanceTransaction> findById(Long id) {
-        return financeTransactionRepository.findById(id);
+    public FinanceTransaction findById(Long id) {
+        return financeTransactionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("FinanceTransaction not found with id: " + id));
     }
 
     @Override

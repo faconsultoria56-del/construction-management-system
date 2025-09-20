@@ -1,5 +1,6 @@
 package com.project.construction.service.impl;
 
+import com.project.construction.exception.ResourceNotFoundException;
 import com.project.construction.model.Partner;
 import com.project.construction.repository.PartnerRepository;
 import com.project.construction.service.PartnerService;
@@ -23,8 +24,9 @@ public class PartnerServiceImpl implements PartnerService {
     }
 
     @Override
-    public Optional<Partner> findById(Long id) {
-        return partnerRepository.findById(id);
+    public Partner findById(Long id) {
+        return partnerRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Partner not found with id: " + id));
     }
 
     @Override

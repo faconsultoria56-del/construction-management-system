@@ -1,5 +1,6 @@
 package com.project.construction.service.impl;
 
+import com.project.construction.exception.ResourceNotFoundException;
 import com.project.construction.model.ConstructionSite;
 import com.project.construction.repository.ConstructionSiteRepository;
 import com.project.construction.service.ConstructionSiteService;
@@ -23,8 +24,9 @@ public class ConstructionSiteServiceImpl implements ConstructionSiteService {
     }
 
     @Override
-    public Optional<ConstructionSite> findById(Long id) {
-        return constructionSiteRepository.findById(id);
+    public ConstructionSite findById(Long id) {
+        return constructionSiteRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("ConstructionSite not found with id: " + id));
     }
 
     @Override

@@ -29,9 +29,8 @@ public class EmployeeController {
 
     @GetMapping("/{id}")
     public ResponseEntity<EmployeeResponse> getEmployeeById(@PathVariable Long id) {
-        Optional<Employee> employee = employeeService.findById(id);
-        return employee.map(e -> ResponseEntity.ok(toResponse(e)))
-                       .orElseGet(() -> ResponseEntity.notFound().build());
+        Employee employee = employeeService.findById(id);
+        return ResponseEntity.ok(toResponse(employee));
     }
 
     @GetMapping
@@ -43,27 +42,21 @@ public class EmployeeController {
 
     @PutMapping("/{id}")
     public ResponseEntity<EmployeeResponse> updateEmployee(@PathVariable Long id, @RequestBody EmployeeRequest employeeRequest) {
-        Optional<Employee> employeeOptional = employeeService.findById(id);
-        if (employeeOptional.isPresent()) {
-            Employee employee = employeeOptional.get();
-            employee.setName(employeeRequest.getName());
-            employee.setCpf(employeeRequest.getCpf());
-            employee.setRole(employeeRequest.getRole());
-            employee.setContractType(employeeRequest.getContractType());
-            return ResponseEntity.ok(toResponse(employeeService.save(employee)));
-        } else {
-            return ResponseEntity.notFound().build();
+        Employee employee = employeeService.findById(id);
+        employee.setName(employeeRequest.getName());
+        employee.setCpf(employeeRequest.getCpf());
+        employee.setRole(employeeRequest.getRole());
+        employee.setContractType(employeeRequest.getContractType());
+        if (employeeRequest.getPassword() != null && !employeeRequest.getPassword().isEmpty()) {
+            employee.setPassword(employeeRequest.getPassword());
         }
+        return ResponseEntity.ok(toResponse(employeeService.save(employee)));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEmployee(@PathVariable Long id) {
-        if (employeeService.findById(id).isPresent()) {
-            employeeService.deleteById(id);
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        employeeService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 
     private Employee toEntity(EmployeeRequest request) {

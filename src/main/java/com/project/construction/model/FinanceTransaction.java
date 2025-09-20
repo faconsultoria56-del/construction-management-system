@@ -26,6 +26,8 @@ public class FinanceTransaction {
     @JoinColumn(name = "employee_id")
     private Employee employee;
 
+    private String status;
+
     // Getters and setters
     public Long getId() {
         return id;
@@ -65,5 +67,13 @@ public class FinanceTransaction {
 
     public void setEmployee(Employee employee) {
         this.employee = employee;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

@@ -71,6 +71,7 @@ public class EmployeeController {
         employee.setName(request.getName());
         employee.setCpf(request.getCpf());
         employee.setRole(request.getRole());
+        employee.setPassword(request.getPassword());
         employee.setContractType(request.getContractType());
         return employee;
     }

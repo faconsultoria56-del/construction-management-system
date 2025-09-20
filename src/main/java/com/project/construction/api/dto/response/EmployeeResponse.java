@@ -1,12 +1,13 @@
 package com.project.construction.api.dto.response;
 
 import com.project.construction.model.ContractType;
+import com.project.construction.model.Role;
 
 public class EmployeeResponse {
     private Long id;
     private String name;
     private String cpf;
-    private String role;
+    private Role role;
     private ContractType contractType;
 
     // Getters and setters
@@ -34,11 +35,11 @@ public class EmployeeResponse {
         this.cpf = cpf;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(Role role) {
         this.role = role;
     }
 

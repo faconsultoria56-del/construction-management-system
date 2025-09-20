@@ -1,11 +1,13 @@
 package com.project.construction.api.dto.request;
 
 import com.project.construction.model.ContractType;
+import com.project.construction.model.Role;
 
 public class EmployeeRequest {
     private String name;
     private String cpf;
-    private String role;
+    private Role role;
+    private String password;
     private ContractType contractType;
 
     // Getters and setters
@@ -25,12 +27,20 @@ public class EmployeeRequest {
         this.cpf = cpf;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(Role role) {
         this.role = role;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public ContractType getContractType() {

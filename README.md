@@ -12,6 +12,76 @@ O sistema é responsável por gerenciar empresas de construção civil, oferecen
 
 ---
 
+## 🚀 Getting Started
+
+This guide will walk you through setting up and running the application locally.
+
+### Prerequisites
+- **Java 17**: Make sure you have JDK 17 installed.
+- **PostgreSQL**: The application requires a running PostgreSQL database instance.
+- **Maven**: The project uses Maven for dependency management. The included Maven Wrapper (`mvnw`) is recommended, so you don't need a local Maven installation.
+
+### Configuration
+1.  **Create a Database**:
+    -   In your PostgreSQL instance, create a new database. The application is configured to use a database named `constructiondb`.
+    ```sql
+    CREATE DATABASE constructiondb;
+    ```
+
+2.  **Environment Variables**:
+    -   The application connects to the database using environment variables. You must set the following variables in your environment before running the application:
+    -   `SPRING_DATASOURCE_URL`: The full JDBC URL for your PostgreSQL database. Example: `jdbc:postgresql://localhost:5432/constructiondb`
+    -   `SPRING_DATASOURCE_USERNAME`: The username for your database.
+    -   `SPRING_DATASOURCE_PASSWORD`: The password for your database.
+
+### Running the Application
+1.  **Build the Project**:
+    -   Open a terminal in the project's root directory and run the following command to build the project using the Maven Wrapper:
+    ```bash
+    ./mvnw clean install
+    ```
+
+2.  **Run the Application**:
+    -   Once the build is complete, you can run the application with:
+    ```bash
+    ./mvnw spring-boot:run
+    ```
+    -   The application will start on `http://localhost:8080`.
+    -   On the first startup, **Flyway** will automatically run the database migrations to create the necessary tables.
+
+### Authentication
+The application is secured using JWT. To access protected endpoints, you need to authenticate and get a token.
+
+1.  **Default Admin User**:
+    -   On the first startup, a default user with the `MANAGER` role is created automatically. The credentials are:
+        -   **username** (CPF): `admin`
+        -   **password**: `password`
+
+2.  **Get a JWT**:
+    -   Send a `POST` request to the `/api/v1/authenticate` endpoint with the admin credentials in the request body.
+    -   **Example using `curl`**:
+    ```bash
+    curl -X POST http://localhost:8080/api/v1/authenticate \
+    -H "Content-Type: application/json" \
+    -d '{"username": "admin", "password": "password"}'
+    ```
+    -   The response will be a JSON object containing the JWT:
+    ```json
+    {
+        "jwt": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6..."
+    }
+    ```
+
+3.  **Use the JWT**:
+    -   To access protected endpoints, include the JWT in the `Authorization` header of your requests, prefixed with `Bearer `.
+    -   **Example using `curl` to get all employees**:
+    ```bash
+    curl -X GET http://localhost:8080/api/v1/employees \
+    -H "Authorization: Bearer <your_jwt_here>"
+    ```
+
+---
+
 ## 🧩 Agentes
 
 ### 1. API

@@ -1,5 +1,6 @@
 package com.management.address.model;
 
+import com.management.city.model.City;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -15,8 +16,10 @@ public class Address {
     private String neighborhood;
     private String zipCode;
     private String complement;
-    private String city;
-    private String state;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_city", nullable = false)
+    private City city;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -75,20 +78,12 @@ public class Address {
         this.complement = complement;
     }
 
-    public String getCity() {
+    public City getCity() {
         return city;
     }
 
-    public void setCity(String city) {
+    public void setCity(City city) {
         this.city = city;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
     }
 
     public LocalDateTime getCreatedAt() {

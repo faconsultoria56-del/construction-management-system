@@ -1,4 +1,4 @@
-package com.management.state.model;
+package com.management.city.model;
 
 import jakarta.persistence.*;
 

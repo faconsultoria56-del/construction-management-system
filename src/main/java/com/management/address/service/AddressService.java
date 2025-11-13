@@ -5,8 +5,8 @@ import com.management.address.repository.AddressRepository;
 import com.management.city.model.City;
 import com.management.city.service.CityService;
 import com.management.company.dto.CnpjResponseDTO;
-import com.management.state.model.State;
-import com.management.state.service.StateService;
+import com.management.city.model.State;
+import com.management.city.service.StateService;
 import org.springframework.stereotype.Service;
 
 @Service

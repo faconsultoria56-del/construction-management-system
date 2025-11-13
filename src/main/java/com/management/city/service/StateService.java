@@ -1,7 +1,7 @@
-package com.management.state.service;
+package com.management.city.service;
 
-import com.management.state.model.State;
-import com.management.state.repository.StateRepository;
+import com.management.city.model.State;
+import com.management.city.repository.StateRepository;
 import org.springframework.stereotype.Service;
 
 @Service

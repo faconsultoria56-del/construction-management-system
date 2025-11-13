@@ -1,6 +1,6 @@
-package com.management.state.repository;
+package com.management.city.repository;
 
-import com.management.state.model.State;
+import com.management.city.model.State;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

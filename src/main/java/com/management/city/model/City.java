@@ -1,6 +1,6 @@
 package com.management.city.model;
 
-import com.management.state.model.State;
+import com.management.city.model.State;
 import jakarta.persistence.*;
 
 @Entity

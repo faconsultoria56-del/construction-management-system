@@ -53,6 +53,7 @@ public class PersonService {
         Address address = addressService.createFromCnpj(cnpjData);
 
         Company company = new Company();
+        company.setDocument(createDTO.getCnpj());
         company.setRegisteredName(cnpjData.getRazaoSocial());
         company.setTradeName(cnpjData.getNomeFantasia());
         company.setRegistrationStatusDescription(cnpjData.getDescricaoSituacaoCadastral());

@@ -10,5 +10,4 @@ public class PersonDTO {
     private String document;
     private String email;
     private LocalDate birthDate;
-    private Integer companyId;
 }

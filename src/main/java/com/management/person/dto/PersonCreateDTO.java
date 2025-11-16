@@ -9,5 +9,4 @@ public class PersonCreateDTO {
     private String document;
     private String email;
     private LocalDate birthDate;
-    private String cnpj;
 }

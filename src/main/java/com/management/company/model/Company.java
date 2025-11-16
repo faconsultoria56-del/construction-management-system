@@ -11,9 +11,6 @@ public class Company {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "document")
-    private String document;
-
     @Column(name = "registered_name")
     private String registeredName;
 
@@ -78,14 +75,6 @@ public class Company {
 
     public void setPrimaryPhone(String primaryPhone) {
         this.primaryPhone = primaryPhone;
-    }
-
-    public String getDocument() {
-        return document;
-    }
-
-    public void setDocument(String document) {
-        this.document = document;
     }
 
     public Address getAddress() {

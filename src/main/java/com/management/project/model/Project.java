@@ -1,31 +1,35 @@
-package com.management.person.model;
+package com.management.project.model;
 
 import com.management.address.model.Address;
-import com.management.role.model.Role;
+import com.management.company.model.Company;
+import com.management.person.model.Person;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "person", schema = "management")
-public class Person {
+@Table(name = "project", schema = "management")
+public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "full_name")
-    private String fullName;
+    private String name;
+    private String description;
 
-    private String document;
-    private String email;
-    private String phone;
+    @Column(name = "start_date")
+    private LocalDate startDate;
 
-    @Column(name = "birth_date")
-    private LocalDate birthDate;
+    @Column(name = "end_date")
+    private LocalDate endDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "fk_role")
-    private Role role;
+    @JoinColumn(name = "fk_company")
+    private Company company;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_owner_person")
+    private Person ownerPerson;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_address")
@@ -49,6 +53,7 @@ public class Person {
     }
 
     // Getters and Setters
+
     public Integer getId() {
         return id;
     }
@@ -57,52 +62,52 @@ public class Person {
         this.id = id;
     }
 
-    public String getFullName() {
-        return fullName;
+    public String getName() {
+        return name;
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getDocument() {
-        return document;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDocument(String document) {
-        this.document = document;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public String getEmail() {
-        return email;
+    public LocalDate getStartDate() {
+        return startDate;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
     }
 
-    public String getPhone() {
-        return phone;
+    public LocalDate getEndDate() {
+        return endDate;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
     }
 
-    public LocalDate getBirthDate() {
-        return birthDate;
+    public Company getCompany() {
+        return company;
     }
 
-    public void setBirthDate(LocalDate birthDate) {
-        this.birthDate = birthDate;
+    public void setCompany(Company company) {
+        this.company = company;
     }
 
-    public Role getRole() {
-        return role;
+    public Person getOwnerPerson() {
+        return ownerPerson;
     }
 
-    public void setRole(Role role) {
-        this.role = role;
+    public void setOwnerPerson(Person ownerPerson) {
+        this.ownerPerson = ownerPerson;
     }
 
     public Address getAddress() {

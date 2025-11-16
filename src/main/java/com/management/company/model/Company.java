@@ -11,6 +11,8 @@ public class Company {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    private String document;
+
     @Column(name = "registered_name")
     private String registeredName;
 
@@ -43,6 +45,14 @@ public class Company {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getDocument() {
+        return document;
+    }
+
+    public void setDocument(String document) {
+        this.document = document;
     }
 
     public String getRegisteredName() {

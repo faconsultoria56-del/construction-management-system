@@ -1,15 +1,19 @@
 package com.management.project.service;
 
+import com.management.address.model.Address;
 import com.management.address.repository.AddressRepository;
+import com.management.company.model.Company;
 import com.management.company.repository.CompanyRepository;
+import com.management.person.model.Person;
 import com.management.person.repository.PersonRepository;
-import com.management.project.dto.ProjectCreateDTO;
-import com.management.project.dto.ProjectResponseDTO;
+import com.management.project.dto.ProjectCreateRequest;
+import com.management.project.dto.ProjectMapper;
+import com.management.project.dto.ProjectResponse;
+import com.management.project.exception.BusinessException;
 import com.management.project.model.Project;
 import com.management.project.model.ProjectMember;
 import com.management.project.repository.ProjectMemberRepository;
 import com.management.project.repository.ProjectRepository;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,47 +25,65 @@ public class ProjectService {
     private final CompanyRepository companyRepository;
     private final PersonRepository personRepository;
     private final AddressRepository addressRepository;
-    private final ModelMapper modelMapper;
 
-    public ProjectService(ProjectRepository projectRepository, ProjectMemberRepository projectMemberRepository, CompanyRepository companyRepository, PersonRepository personRepository, AddressRepository addressRepository, ModelMapper modelMapper) {
+    public ProjectService(ProjectRepository projectRepository, ProjectMemberRepository projectMemberRepository, CompanyRepository companyRepository, PersonRepository personRepository, AddressRepository addressRepository) {
         this.projectRepository = projectRepository;
         this.projectMemberRepository = projectMemberRepository;
         this.companyRepository = companyRepository;
         this.personRepository = personRepository;
         this.addressRepository = addressRepository;
-        this.modelMapper = modelMapper;
+    }
+
+    private void validateCreateRequest(ProjectCreateRequest request) {
+        if (request.getCompanyId() == null && request.getOwnerPersonId() == null) {
+            throw new BusinessException("Projeto precisa ter empresa (CNPJ) ou dono (CPF).");
+        }
+        if (request.getCompanyId() != null && request.getOwnerPersonId() != null) {
+            throw new BusinessException("Projeto deve ser pessoal OU empresarial, não ambos.");
+        }
     }
 
     @Transactional
-    public ProjectResponseDTO createProject(ProjectCreateDTO createDTO) {
-        if (createDTO.getCompanyId() == null && createDTO.getOwnerPersonId() == null) {
-            throw new IllegalArgumentException("Projeto precisa ter empresa (CNPJ) ou dono (CPF).");
+    public ProjectResponse create(ProjectCreateRequest request) {
+
+        validateCreateRequest(request);
+
+        Project project = new Project();
+        project.setName(request.getName());
+        project.setDescription(request.getDescription());
+        project.setStartDate(request.getStartDate());
+        project.setEndDate(request.getEndDate());
+
+        if (request.getCompanyId() != null) {
+            Company company = companyRepository.findById(request.getCompanyId())
+                .orElseThrow(() -> new BusinessException("Empresa não encontrada"));
+            project.setCompany(company);
+            project.setOwnerPerson(null);
         }
 
-        Project project = modelMapper.map(createDTO, Project.class);
-
-        if (createDTO.getCompanyId() != null) {
-            project.setCompany(companyRepository.findById(createDTO.getCompanyId()).orElseThrow());
+        if (request.getOwnerPersonId() != null) {
+            Person owner = personRepository.findById(request.getOwnerPersonId())
+                .orElseThrow(() -> new BusinessException("Pessoa não encontrada"));
+            project.setOwnerPerson(owner);
+            project.setCompany(null);
         }
 
-        if (createDTO.getOwnerPersonId() != null) {
-            project.setOwnerPerson(personRepository.findById(createDTO.getOwnerPersonId()).orElseThrow());
+        if (request.getAddressId() != null) {
+            Address address = addressRepository.findById(request.getAddressId())
+                .orElseThrow(() -> new BusinessException("Endereço não encontrado"));
+            project.setAddress(address);
         }
 
-        if (createDTO.getAddressId() != null) {
-            project.setAddress(addressRepository.findById(createDTO.getAddressId()).orElseThrow());
-        }
+        Project saved = projectRepository.save(project);
 
-        project = projectRepository.save(project);
-
-        if (project.getOwnerPerson() != null) {
+        if (request.getOwnerPersonId() != null) {
             ProjectMember member = new ProjectMember();
-            member.setProject(project);
-            member.setPerson(project.getOwnerPerson());
+            member.setProject(saved);
+            member.setPerson(saved.getOwnerPerson());
             member.setRole("Owner");
             projectMemberRepository.save(member);
         }
 
-        return modelMapper.map(project, ProjectResponseDTO.class);
+        return ProjectMapper.toResponse(saved);
     }
 }

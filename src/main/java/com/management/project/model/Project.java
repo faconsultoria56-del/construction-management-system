@@ -24,11 +24,11 @@ public class Project {
     private LocalDate endDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "fk_company")
+    @JoinColumn(name = "fk_company", nullable = true)
     private Company company;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "fk_owner_person")
+    @JoinColumn(name = "fk_owner_person", nullable = true)
     private Person ownerPerson;
 
     @ManyToOne(fetch = FetchType.LAZY)

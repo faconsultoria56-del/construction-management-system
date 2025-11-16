@@ -1,9 +1,9 @@
 package com.management.project.controller;
 
-import com.management.project.dto.ProjectCreateDTO;
-import com.management.project.dto.ProjectResponseDTO;
+import com.management.project.dto.ProjectCreateRequest;
+import com.management.project.dto.ProjectResponse;
 import com.management.project.service.ProjectService;
-import org.springframework.http.HttpStatus;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,8 +21,7 @@ public class ProjectController {
     }
 
     @PostMapping
-    public ResponseEntity<ProjectResponseDTO> createProject(@RequestBody ProjectCreateDTO createDTO) {
-        ProjectResponseDTO createdProject = projectService.createProject(createDTO);
-        return new ResponseEntity<>(createdProject, HttpStatus.CREATED);
+    public ResponseEntity<ProjectResponse> create(@RequestBody @Valid ProjectCreateRequest request) {
+        return ResponseEntity.ok(projectService.create(request));
     }
 }

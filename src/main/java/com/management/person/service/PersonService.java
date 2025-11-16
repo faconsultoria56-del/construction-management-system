@@ -1,6 +1,7 @@
 package com.management.person.service;
 
 import com.management.person.dto.PersonCreateDTO;
+import com.management.company.repository.CompanyPartnerRepository;
 import com.management.person.dto.PersonDTO;
 import com.management.person.model.Person;
 import com.management.person.repository.PersonRepository;
@@ -16,10 +17,12 @@ import java.util.stream.Collectors;
 public class PersonService {
 
     private final PersonRepository personRepository;
+    private final CompanyPartnerRepository companyPartnerRepository;
     private final ModelMapper modelMapper;
 
-    public PersonService(PersonRepository personRepository, ModelMapper modelMapper) {
+    public PersonService(PersonRepository personRepository, CompanyPartnerRepository companyPartnerRepository, ModelMapper modelMapper) {
         this.personRepository = personRepository;
+        this.companyPartnerRepository = companyPartnerRepository;
         this.modelMapper = modelMapper;
     }
 
@@ -41,5 +44,12 @@ public class PersonService {
         Person person = personRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Pessoa não encontrada com o id: " + id));
         return modelMapper.map(person, PersonDTO.class);
+    }
+
+    public List<PersonDTO> findPersonsByCompanyId(Integer companyId) {
+        return companyPartnerRepository.findByCompanyId(companyId)
+                .stream()
+                .map(companyPartner -> modelMapper.map(companyPartner.getPerson(), PersonDTO.class))
+                .collect(Collectors.toList());
     }
 }

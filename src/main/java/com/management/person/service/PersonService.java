@@ -114,19 +114,6 @@ public class PersonService {
         return modelMapper.map(person, PersonDTO.class);
     }
 
-    public List<PersonDTO> findAll() {
-        return personRepository.findAll()
-                .stream()
-                .map(person -> modelMapper.map(person, PersonDTO.class))
-                .collect(Collectors.toList());
-    }
-
-    public PersonDTO findById(Integer id) {
-        Person person = personRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Pessoa não encontrada com o id: " + id));
-        return modelMapper.map(person, PersonDTO.class);
-    }
-
     public List<PersonDTO> findPersonsByCompanyId(Integer companyId) {
         return companyPartnerRepository.findByCompanyId(companyId)
                 .stream()

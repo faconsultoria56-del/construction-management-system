@@ -13,6 +13,7 @@ import com.management.company.repository.CompanyPartnerRepository;
 import com.management.company.repository.CompanyRepository;
 import com.management.company.service.BrasilApiService;
 import com.management.person.dto.PersonCreateDTO;
+import com.management.company.repository.CompanyPartnerRepository;
 import com.management.person.dto.PersonDTO;
 import com.management.person.model.Person;
 import com.management.person.repository.PersonRepository;

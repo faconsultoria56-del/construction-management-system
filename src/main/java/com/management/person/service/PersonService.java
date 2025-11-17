@@ -13,6 +13,7 @@ import com.management.company.repository.CompanyPartnerRepository;
 import com.management.company.repository.CompanyRepository;
 import com.management.company.service.BrasilApiService;
 import com.management.person.dto.PersonCreateDTO;
+import com.management.company.repository.CompanyPartnerRepository;
 import com.management.person.dto.PersonDTO;
 import com.management.person.model.Person;
 import com.management.person.repository.PersonRepository;
@@ -98,6 +99,19 @@ public class PersonService {
             }
         }
         return modelMapper.map(savedPerson, PersonDTO.class);
+    }
+
+    public List<PersonDTO> findAll() {
+        return personRepository.findAll()
+                .stream()
+                .map(person -> modelMapper.map(person, PersonDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    public PersonDTO findById(Integer id) {
+        Person person = personRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Pessoa não encontrada com o id: " + id));
+        return modelMapper.map(person, PersonDTO.class);
     }
 
     public List<PersonDTO> findAll() {

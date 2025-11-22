@@ -1,6 +1,5 @@
 package com.management.projectoccurrence.dto;
 
-import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -14,7 +13,6 @@ public class ProjectOccurrenceCreateRequest {
     private Integer personId;
 
     @NotNull
-    @FutureOrPresent
     private LocalDate occurrenceDate;
 
     @NotBlank

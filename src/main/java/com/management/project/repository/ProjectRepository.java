@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ProjectRepository extends JpaRepository<Project, Integer> {
-    List<Project> findByCompanyId(Integer companyId);
-    List<Project> findByOwnerPersonId(Integer personId);
+public interface ProjectRepository extends JpaRepository<Project, Long> {
+    List<Project> findByCompanyId(Long companyId);
+    List<Project> findByOwnerPersonId(Long personId);
 }

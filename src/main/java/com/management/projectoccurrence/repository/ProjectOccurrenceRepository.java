@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ProjectOccurrenceRepository extends JpaRepository<ProjectOccurrence, Integer> {
+public interface ProjectOccurrenceRepository extends JpaRepository<ProjectOccurrence, Long> {
 
-    List<ProjectOccurrence> findByProjectId(Integer projectId);
+    List<ProjectOccurrence> findByProjectId(Long projectId);
 }

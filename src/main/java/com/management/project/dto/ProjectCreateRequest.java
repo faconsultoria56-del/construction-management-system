@@ -17,10 +17,10 @@ public class ProjectCreateRequest {
     private LocalDate endDate;
 
     // Empresa (CNPJ)
-    private Integer companyId;
+    private Long companyId;
 
     // Pessoa física (CPF)
-    private Integer ownerPersonId;
+    private Long ownerPersonId;
 
-    private Integer addressId;
+    private Long addressId;
 }

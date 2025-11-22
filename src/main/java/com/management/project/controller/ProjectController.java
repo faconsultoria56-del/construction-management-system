@@ -32,17 +32,17 @@ public class ProjectController {
     }
 
     @GetMapping("/projects/{id}")
-    public ResponseEntity<ProjectResponse> findById(@PathVariable Integer id) {
+    public ResponseEntity<ProjectResponse> findById(@PathVariable Long id) {
         return ResponseEntity.ok(projectService.findById(id));
     }
 
     @GetMapping("/companies/{companyId}/projects")
-    public ResponseEntity<List<ProjectResponse>> findByCompanyId(@PathVariable Integer companyId) {
+    public ResponseEntity<List<ProjectResponse>> findByCompanyId(@PathVariable Long companyId) {
         return ResponseEntity.ok(projectService.findByCompanyId(companyId));
     }
 
     @GetMapping("/persons/{personId}/projects")
-    public ResponseEntity<List<ProjectResponse>> findByPersonId(@PathVariable Integer personId) {
+    public ResponseEntity<List<ProjectResponse>> findByPersonId(@PathVariable Long personId) {
         return ResponseEntity.ok(projectService.findByPersonId(personId));
     }
 }

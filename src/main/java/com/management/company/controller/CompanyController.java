@@ -21,7 +21,7 @@ public class CompanyController {
     }
 
     @GetMapping("/{companyId}/persons")
-    public ResponseEntity<List<PersonDTO>> findPersonsByCompanyId(@PathVariable Integer companyId) {
+    public ResponseEntity<List<PersonDTO>> findPersonsByCompanyId(@PathVariable Long companyId) {
         return ResponseEntity.ok(personService.findPersonsByCompanyId(companyId));
     }
 }

@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface CompanyPartnerRepository extends JpaRepository<CompanyPartner, Integer> {
-    List<CompanyPartner> findByCompanyId(Integer companyId);
+public interface CompanyPartnerRepository extends JpaRepository<CompanyPartner, Long> {
+    List<CompanyPartner> findByCompanyId(Long companyId);
 }

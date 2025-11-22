@@ -25,22 +25,22 @@ public class ProjectResourceController {
     }
 
     @GetMapping("/resources/{id}")
-    public ResponseEntity<ProjectResourceResponse> getById(@PathVariable Integer id) {
+    public ResponseEntity<ProjectResourceResponse> getById(@PathVariable Long id) {
         return ResponseEntity.ok(resourceService.findById(id));
     }
 
     @GetMapping("/projects/{projectId}/resources")
-    public ResponseEntity<List<ProjectResourceResponse>> getByProject(@PathVariable Integer projectId) {
+    public ResponseEntity<List<ProjectResourceResponse>> getByProject(@PathVariable Long projectId) {
         return ResponseEntity.ok(resourceService.listByProject(projectId));
     }
 
     @PutMapping("/resources/{id}")
-    public ResponseEntity<ProjectResourceResponse> update(@PathVariable Integer id, @Valid @RequestBody ProjectResourceUpdateRequest request) {
+    public ResponseEntity<ProjectResourceResponse> update(@PathVariable Long id, @Valid @RequestBody ProjectResourceUpdateRequest request) {
         return ResponseEntity.ok(resourceService.update(id, request));
     }
 
     @DeleteMapping("/resources/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Integer id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         resourceService.delete(id);
         return ResponseEntity.noContent().build();
     }

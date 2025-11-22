@@ -1,33 +1,38 @@
 package com.management.project.dto;
 
 import com.management.project.model.Project;
+import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Component
 public class ProjectMapper {
 
-    public static ProjectResponse toResponse(Project project) {
+    private final ModelMapper modelMapper;
 
-        ProjectResponse response = new ProjectResponse();
+    public ProjectMapper(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
+    }
 
-        response.setId(project.getId());
-        response.setName(project.getName());
-        response.setDescription(project.getDescription());
-        response.setStartDate(project.getStartDate());
-        response.setEndDate(project.getEndDate());
-
-        response.setCompanyId(
-            project.getCompany() != null ? project.getCompany().getId() : null
-        );
-        response.setOwnerPersonId(
-            project.getOwnerPerson() != null ? project.getOwnerPerson().getId() : null
-        );
-
-        response.setAddressId(
-            project.getAddress() != null ? project.getAddress().getId() : null
-        );
-
-        response.setCreatedAt(project.getCreatedAt());
-        response.setUpdatedAt(project.getUpdatedAt());
-
+    public ProjectResponse toResponse(Project project) {
+        ProjectResponse response = modelMapper.map(project, ProjectResponse.class);
+        if (project.getCompany() != null) {
+            response.setCompanyId(project.getCompany().getId());
+        }
+        if (project.getOwnerPerson() != null) {
+            response.setOwnerPersonId(project.getOwnerPerson().getId());
+        }
+        if (project.getAddress() != null) {
+            response.setAddressId(project.getAddress().getId());
+        }
         return response;
+    }
+
+    public List<ProjectResponse> toResponse(List<Project> projects) {
+        return projects.stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
     }
 }

@@ -7,6 +7,7 @@ import com.management.company.repository.CompanyRepository;
 import com.management.person.model.Person;
 import com.management.person.repository.PersonRepository;
 import com.management.project.dto.ProjectCreateRequest;
+import com.management.project.dto.ProjectMapper;
 import com.management.project.dto.ProjectResponse;
 import com.management.project.exception.BusinessException;
 import com.management.project.model.Project;
@@ -19,8 +20,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -44,6 +50,9 @@ class ProjectServiceTest {
 
     @Mock
     private AddressRepository addressRepository;
+
+    @Mock
+    private ProjectMapper projectMapper;
 
     @InjectMocks
     private ProjectService projectService;
@@ -86,6 +95,12 @@ class ProjectServiceTest {
         project.setCompany(company);
         when(projectRepository.save(any(Project.class))).thenReturn(project);
 
+        ProjectResponse projectResponse = new ProjectResponse();
+        projectResponse.setId(1);
+        projectResponse.setName("New Project");
+        projectResponse.setCompanyId(1);
+        when(projectMapper.toResponse(any(Project.class))).thenReturn(projectResponse);
+
         ProjectResponse response = projectService.create(projectCreateRequest);
 
         assertNotNull(response);
@@ -109,6 +124,12 @@ class ProjectServiceTest {
         project.setName(projectCreateRequest.getName());
         project.setOwnerPerson(person);
         when(projectRepository.save(any(Project.class))).thenReturn(project);
+
+        ProjectResponse projectResponse = new ProjectResponse();
+        projectResponse.setId(1);
+        projectResponse.setName("New Project");
+        projectResponse.setOwnerPersonId(1);
+        when(projectMapper.toResponse(any(Project.class))).thenReturn(projectResponse);
 
         ProjectResponse response = projectService.create(projectCreateRequest);
 
@@ -140,9 +161,65 @@ class ProjectServiceTest {
         project.setAddress(address);
         when(projectRepository.save(any(Project.class))).thenReturn(project);
 
+        ProjectResponse projectResponse = new ProjectResponse();
+        projectResponse.setAddressId(1);
+        when(projectMapper.toResponse(any(Project.class))).thenReturn(projectResponse);
+
         ProjectResponse response = projectService.create(projectCreateRequest);
 
         assertNotNull(response);
         assertEquals(address.getId(), response.getAddressId());
+    }
+
+    @Test
+    void findAll_shouldReturnPageOfProjects() {
+        Page<Project> page = new PageImpl<>(Collections.singletonList(new Project()));
+        when(projectRepository.findAll(any(Pageable.class))).thenReturn(page);
+
+        Page<ProjectResponse> response = projectService.findAll(Pageable.unpaged());
+
+        assertNotNull(response);
+        assertEquals(1, response.getTotalElements());
+    }
+
+    @Test
+    void findById_shouldReturnProject() {
+        Project project = new Project();
+        project.setId(1);
+        when(projectRepository.findById(1)).thenReturn(Optional.of(project));
+
+        ProjectResponse projectResponse = new ProjectResponse();
+        projectResponse.setId(1);
+        when(projectMapper.toResponse(any(Project.class))).thenReturn(projectResponse);
+
+        ProjectResponse response = projectService.findById(1);
+
+        assertNotNull(response);
+        assertEquals(1, response.getId());
+    }
+
+    @Test
+    void findByCompanyId_shouldReturnListOfProjects() {
+        when(companyRepository.existsById(1)).thenReturn(true);
+        when(projectRepository.findByCompanyId(1)).thenReturn(Collections.singletonList(new Project()));
+        when(projectMapper.toResponse(any(List.class))).thenReturn(Collections.singletonList(new ProjectResponse()));
+
+        List<ProjectResponse> response = projectService.findByCompanyId(1);
+
+        assertNotNull(response);
+        assertEquals(1, response.size());
+    }
+
+    @Test
+    void findByPersonId_shouldReturnListOfProjects() {
+        when(personRepository.existsById(1)).thenReturn(true);
+        when(projectRepository.findByOwnerPersonId(1)).thenReturn(Collections.singletonList(new Project()));
+        when(projectMemberRepository.findByPersonId(1)).thenReturn(Collections.emptyList());
+        when(projectMapper.toResponse(any(List.class))).thenReturn(Collections.singletonList(new ProjectResponse()));
+
+        List<ProjectResponse> response = projectService.findByPersonId(1);
+
+        assertNotNull(response);
+        assertEquals(1, response.size());
     }
 }

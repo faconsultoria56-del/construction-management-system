@@ -4,14 +4,15 @@ import com.management.project.dto.ProjectCreateRequest;
 import com.management.project.dto.ProjectResponse;
 import com.management.project.service.ProjectService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
-@RequestMapping("/api/projects")
+@RequestMapping
 public class ProjectController {
 
     private final ProjectService projectService;
@@ -20,8 +21,28 @@ public class ProjectController {
         this.projectService = projectService;
     }
 
-    @PostMapping
+    @PostMapping("/projects")
     public ResponseEntity<ProjectResponse> create(@RequestBody @Valid ProjectCreateRequest request) {
         return ResponseEntity.ok(projectService.create(request));
+    }
+
+    @GetMapping("/projects")
+    public ResponseEntity<Page<ProjectResponse>> findAll(Pageable pageable) {
+        return ResponseEntity.ok(projectService.findAll(pageable));
+    }
+
+    @GetMapping("/projects/{id}")
+    public ResponseEntity<ProjectResponse> findById(@PathVariable Integer id) {
+        return ResponseEntity.ok(projectService.findById(id));
+    }
+
+    @GetMapping("/companies/{companyId}/projects")
+    public ResponseEntity<List<ProjectResponse>> findByCompanyId(@PathVariable Integer companyId) {
+        return ResponseEntity.ok(projectService.findByCompanyId(companyId));
+    }
+
+    @GetMapping("/persons/{personId}/projects")
+    public ResponseEntity<List<ProjectResponse>> findByPersonId(@PathVariable Integer personId) {
+        return ResponseEntity.ok(projectService.findByPersonId(personId));
     }
 }

@@ -108,13 +108,13 @@ public class PersonService {
                 .collect(Collectors.toList());
     }
 
-    public PersonDTO findById(Long id) {
+    public PersonDTO findById(Integer id) {
         Person person = personRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Pessoa não encontrada com o id: " + id));
         return modelMapper.map(person, PersonDTO.class);
     }
 
-    public List<PersonDTO> findPersonsByCompanyId(Long companyId) {
+    public List<PersonDTO> findPersonsByCompanyId(Integer companyId) {
         return companyPartnerRepository.findByCompanyId(companyId)
                 .stream()
                 .map(companyPartner -> modelMapper.map(companyPartner.getPerson(), PersonDTO.class))

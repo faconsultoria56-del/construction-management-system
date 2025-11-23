@@ -8,9 +8,9 @@ import java.time.LocalDateTime;
 @Data
 public class ProjectOccurrenceResponse {
 
-    private Long id;
-    private Long projectId;
-    private Long personId;
+    private Integer id;
+    private Integer projectId;
+    private Integer personId;
     private LocalDate occurrenceDate;
     private String description;
     private LocalDateTime createdAt;

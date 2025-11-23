@@ -20,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -80,7 +81,7 @@ public class ProjectService {
         if (request.getAddressId() != null) {
             Address address = addressRepository.findById(request.getAddressId())
                 .orElseThrow(() -> new BusinessException("Endereço não encontrado"));
-            project.setAddress(address);
+            project.setAddresses(Collections.singletonList(address));
         }
 
         Project saved = projectRepository.save(project);
@@ -103,14 +104,14 @@ public class ProjectService {
     }
 
     @Transactional(readOnly = true)
-    public ProjectResponse findById(Long id) {
+    public ProjectResponse findById(Integer id) {
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Project not found with id: " + id));
         return projectMapper.toResponse(project);
     }
 
     @Transactional(readOnly = true)
-    public List<ProjectResponse> findByCompanyId(Long companyId) {
+    public List<ProjectResponse> findByCompanyId(Integer companyId) {
         if (!companyRepository.existsById(companyId)) {
             throw new ResourceNotFoundException("Company not found with id: " + companyId);
         }
@@ -118,7 +119,7 @@ public class ProjectService {
     }
 
     @Transactional(readOnly = true)
-    public List<ProjectResponse> findByPersonId(Long personId) {
+    public List<ProjectResponse> findByPersonId(Integer personId) {
         if (!personRepository.existsById(personId)) {
             throw new ResourceNotFoundException("Person not found with id: " + personId);
         }

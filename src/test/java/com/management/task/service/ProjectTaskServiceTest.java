@@ -41,16 +41,16 @@ class ProjectTaskServiceTest {
         // Arrange
         ProjectTaskCreateRequest request = new ProjectTaskCreateRequest();
         request.setTitle("New Task");
-        request.setProjectId(1L);
-        request.setResponsibleId(1L);
+        request.setProjectId(1);
+        request.setResponsibleId(1);
 
         Project project = new Project();
         Person person = new Person();
         ProjectTask task = new ProjectTask();
         ProjectTaskResponse response = new ProjectTaskResponse();
 
-        when(projectRepository.findById(1L)).thenReturn(Optional.of(project));
-        when(personRepository.findById(1L)).thenReturn(Optional.of(person));
+        when(projectRepository.findById(1)).thenReturn(Optional.of(project));
+        when(personRepository.findById(1)).thenReturn(Optional.of(person));
         when(taskRepository.save(any(ProjectTask.class))).thenReturn(task);
         when(taskMapper.toResponse(task)).thenReturn(response);
 

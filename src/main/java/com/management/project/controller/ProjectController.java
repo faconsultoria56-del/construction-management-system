@@ -3,13 +3,13 @@ package com.management.project.controller;
 import com.management.project.dto.ProjectCreateRequest;
 import com.management.project.dto.ProjectResponse;
 import com.management.project.service.ProjectService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.Operation;
 
 import java.util.List;
 
@@ -38,17 +38,17 @@ public class ProjectController {
 
     @GetMapping("/projects/{id}")
     @Operation(summary = "Finds a project by ID")
-    public ResponseEntity<ProjectResponse> findById(@PathVariable Long id) {
+    public ResponseEntity<ProjectResponse> findById(@PathVariable Integer id) {
         return ResponseEntity.ok(projectService.findById(id));
     }
 
     @GetMapping("/companies/{companyId}/projects")
-    public ResponseEntity<List<ProjectResponse>> findByCompanyId(@PathVariable Long companyId) {
+    public ResponseEntity<List<ProjectResponse>> findByCompanyId(@PathVariable Integer companyId) {
         return ResponseEntity.ok(projectService.findByCompanyId(companyId));
     }
 
     @GetMapping("/persons/{personId}/projects")
-    public ResponseEntity<List<ProjectResponse>> findByPersonId(@PathVariable Long personId) {
+    public ResponseEntity<List<ProjectResponse>> findByPersonId(@PathVariable Integer personId) {
         return ResponseEntity.ok(projectService.findByPersonId(personId));
     }
 }

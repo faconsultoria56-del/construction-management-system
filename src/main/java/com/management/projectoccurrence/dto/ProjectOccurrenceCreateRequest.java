@@ -10,10 +10,10 @@ import java.time.LocalDate;
 public class ProjectOccurrenceCreateRequest {
 
     @NotNull
-    private Long projectId;
+    private Integer projectId;
 
     @NotNull
-    private Long personId;
+    private Integer personId;
 
     @NotNull
     private LocalDate occurrenceDate;

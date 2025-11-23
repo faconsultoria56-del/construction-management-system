@@ -12,6 +12,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class ProjectAddressService {
 
@@ -27,7 +30,7 @@ public class ProjectAddressService {
     @Autowired
     private ModelMapper modelMapper;
 
-    public ProjectAddressResponseDTO createProjectAddress(Long projectId, ProjectAddressRequestDTO requestDTO) {
+    public ProjectAddressResponseDTO createProjectAddress(Integer projectId, ProjectAddressRequestDTO requestDTO) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ResourceNotFoundException("Project not found with id: " + projectId));
 
@@ -35,32 +38,42 @@ public class ProjectAddressService {
         address.setCity(cityRepository.findById(requestDTO.getCityId())
                 .orElseThrow(() -> new ResourceNotFoundException("City not found with id: " + requestDTO.getCityId())));
 
-        project.setAddress(address);
+        project.getAddresses().add(address);
         projectRepository.save(project);
 
         return modelMapper.map(address, ProjectAddressResponseDTO.class);
     }
 
-    public ProjectAddressResponseDTO getProjectAddress(Long projectId) {
+    public List<ProjectAddressResponseDTO> getAllProjectAddresses(Integer projectId) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ResourceNotFoundException("Project not found with id: " + projectId));
 
-        if (project.getAddress() == null) {
-            throw new ResourceNotFoundException("Address not found for project with id: " + projectId);
-        }
-
-        return modelMapper.map(project.getAddress(), ProjectAddressResponseDTO.class);
+        return project.getAddresses().stream()
+                .map(address -> modelMapper.map(address, ProjectAddressResponseDTO.class))
+                .collect(Collectors.toList());
     }
 
-    public ProjectAddressResponseDTO updateProjectAddress(Long projectId, ProjectAddressRequestDTO requestDTO) {
+    public ProjectAddressResponseDTO getProjectAddressById(Integer projectId, Integer addressId) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ResourceNotFoundException("Project not found with id: " + projectId));
 
-        if (project.getAddress() == null) {
-            throw new ResourceNotFoundException("Address not found for project with id: " + projectId);
-        }
+        Address address = project.getAddresses().stream()
+                .filter(a -> a.getId().equals(addressId))
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("Address not found with id: " + addressId));
 
-        Address address = project.getAddress();
+        return modelMapper.map(address, ProjectAddressResponseDTO.class);
+    }
+
+    public ProjectAddressResponseDTO updateProjectAddress(Integer projectId, Integer addressId, ProjectAddressRequestDTO requestDTO) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ResourceNotFoundException("Project not found with id: " + projectId));
+
+        Address address = project.getAddresses().stream()
+                .filter(a -> a.getId().equals(addressId))
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("Address not found with id: " + addressId));
+
         modelMapper.map(requestDTO, address);
         address.setCity(cityRepository.findById(requestDTO.getCityId())
                 .orElseThrow(() -> new ResourceNotFoundException("City not found with id: " + requestDTO.getCityId())));
@@ -70,17 +83,16 @@ public class ProjectAddressService {
         return modelMapper.map(address, ProjectAddressResponseDTO.class);
     }
 
-    public void deleteProjectAddress(Long projectId) {
+    public void deleteProjectAddress(Integer projectId, Integer addressId) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ResourceNotFoundException("Project not found with id: " + projectId));
 
-        if (project.getAddress() == null) {
-            throw new ResourceNotFoundException("Address not found for project with id: " + projectId);
-        }
+        Address address = project.getAddresses().stream()
+                .filter(a -> a.getId().equals(addressId))
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("Address not found with id: " + addressId));
 
-        Address address = project.getAddress();
-        project.setAddress(null);
+        project.getAddresses().remove(address);
         projectRepository.save(project);
-        addressRepository.delete(address);
     }
 }

@@ -61,18 +61,18 @@ class ProjectOccurrenceServiceTest {
     @Test
     void testCreate() {
         ProjectOccurrenceCreateRequest request = new ProjectOccurrenceCreateRequest();
-        request.setProjectId(1L);
-        request.setPersonId(1L);
+        request.setProjectId(1);
+        request.setPersonId(1);
         request.setDescription("Test Description");
         request.setOccurrenceDate(LocalDate.now());
 
         Project project = new Project();
-        project.setId(1L);
+        project.setId(1);
         Person person = new Person();
-        person.setId(1L);
+        person.setId(1);
 
-        when(projectRepository.findById(1L)).thenReturn(Optional.of(project));
-        when(personRepository.findById(1L)).thenReturn(Optional.of(person));
+        when(projectRepository.findById(1)).thenReturn(Optional.of(project));
+        when(personRepository.findById(1)).thenReturn(Optional.of(person));
         when(projectOccurrenceRepository.save(any(ProjectOccurrence.class))).thenAnswer(i -> i.getArguments()[0]);
 
         ProjectOccurrenceResponse response = projectOccurrenceService.create(request);
@@ -88,21 +88,21 @@ class ProjectOccurrenceServiceTest {
         request.setDescription("Updated Description");
 
         Project project = new Project();
-        project.setId(1L);
+        project.setId(1);
         Person person = new Person();
-        person.setId(1L);
+        person.setId(1);
 
         ProjectOccurrence occurrence = new ProjectOccurrence();
-        occurrence.setId(1L);
+        occurrence.setId(1);
         occurrence.setDescription("Old Description");
         occurrence.setProject(project);
         occurrence.setPerson(person);
 
 
-        when(projectOccurrenceRepository.findById(1L)).thenReturn(Optional.of(occurrence));
+        when(projectOccurrenceRepository.findById(1)).thenReturn(Optional.of(occurrence));
         when(projectOccurrenceRepository.save(any(ProjectOccurrence.class))).thenAnswer(i -> i.getArguments()[0]);
 
-        ProjectOccurrenceResponse response = projectOccurrenceService.update(1L, request);
+        ProjectOccurrenceResponse response = projectOccurrenceService.update(1, request);
 
         assertNotNull(response);
         assertEquals("Updated Description", response.getDescription());
@@ -110,30 +110,30 @@ class ProjectOccurrenceServiceTest {
 
     @Test
     void testDelete() {
-        when(projectOccurrenceRepository.existsById(1L)).thenReturn(true);
-        doNothing().when(projectOccurrenceRepository).deleteById(1L);
+        when(projectOccurrenceRepository.existsById(1)).thenReturn(true);
+        doNothing().when(projectOccurrenceRepository).deleteById(1);
 
-        projectOccurrenceService.delete(1L);
+        projectOccurrenceService.delete(1);
 
-        verify(projectOccurrenceRepository, times(1)).deleteById(1L);
+        verify(projectOccurrenceRepository, times(1)).deleteById(1);
     }
 
     @Test
     void testListByProject() {
         Project project = new Project();
-        project.setId(1L);
+        project.setId(1);
         Person person = new Person();
-        person.setId(1L);
+        person.setId(1);
 
         ProjectOccurrence occurrence = new ProjectOccurrence();
-        occurrence.setId(1L);
+        occurrence.setId(1);
         occurrence.setProject(project);
         occurrence.setPerson(person);
 
-        when(projectRepository.existsById(1L)).thenReturn(true);
-        when(projectOccurrenceRepository.findByProjectId(1L)).thenReturn(Collections.singletonList(occurrence));
+        when(projectRepository.existsById(1)).thenReturn(true);
+        when(projectOccurrenceRepository.findByProjectId(1)).thenReturn(Collections.singletonList(occurrence));
 
-        List<ProjectOccurrenceResponse> response = projectOccurrenceService.listByProject(1L);
+        List<ProjectOccurrenceResponse> response = projectOccurrenceService.listByProject(1);
 
         assertNotNull(response);
         assertFalse(response.isEmpty());
@@ -143,18 +143,18 @@ class ProjectOccurrenceServiceTest {
     @Test
     void testFindById() {
         Project project = new Project();
-        project.setId(1L);
+        project.setId(1);
         Person person = new Person();
-        person.setId(1L);
+        person.setId(1);
 
         ProjectOccurrence occurrence = new ProjectOccurrence();
-        occurrence.setId(1L);
+        occurrence.setId(1);
         occurrence.setProject(project);
         occurrence.setPerson(person);
 
-        when(projectOccurrenceRepository.findById(1L)).thenReturn(Optional.of(occurrence));
+        when(projectOccurrenceRepository.findById(1)).thenReturn(Optional.of(occurrence));
 
-        ProjectOccurrenceResponse response = projectOccurrenceService.findById(1L);
+        ProjectOccurrenceResponse response = projectOccurrenceService.findById(1);
 
         assertNotNull(response);
         assertEquals(1, response.getId());
@@ -163,9 +163,9 @@ class ProjectOccurrenceServiceTest {
     @Test
     void testCreate_ProjectNotFound() {
         ProjectOccurrenceCreateRequest request = new ProjectOccurrenceCreateRequest();
-        request.setProjectId(1L);
+        request.setProjectId(1);
 
-        when(projectRepository.findById(1L)).thenReturn(Optional.empty());
+        when(projectRepository.findById(1)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> projectOccurrenceService.create(request));
     }

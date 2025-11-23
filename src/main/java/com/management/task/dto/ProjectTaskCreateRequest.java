@@ -16,9 +16,9 @@ public class ProjectTaskCreateRequest {
     private LocalDate dueDate;
 
     @NotNull(message = "O ID do projeto é obrigatório")
-    private Long projectId;
+    private Integer projectId;
 
-    private Long responsibleId;
+    private Integer responsibleId;
 
-    private Long parentId;
+    private Integer parentId;
 }

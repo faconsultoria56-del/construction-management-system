@@ -3,6 +3,7 @@ package com.management.person.controller;
 import com.management.person.dto.PersonCreateDTO;
 import com.management.person.dto.PersonDTO;
 import com.management.person.service.PersonService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.Operation;
 
 import java.util.List;
 
@@ -42,7 +42,7 @@ public class PersonController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Finds a person by ID")
-    public ResponseEntity<PersonDTO> findById(@PathVariable Long id) {
+    public ResponseEntity<PersonDTO> findById(@PathVariable Integer id) {
         return ResponseEntity.ok(personService.findById(id));
     }
 }

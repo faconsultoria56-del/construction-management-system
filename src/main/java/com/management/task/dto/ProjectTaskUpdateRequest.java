@@ -9,5 +9,5 @@ public class ProjectTaskUpdateRequest {
     private String description;
     private String status;
     private LocalDate dueDate;
-    private Long responsibleId;
+    private Integer responsibleId;
 }

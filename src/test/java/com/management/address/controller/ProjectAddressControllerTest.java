@@ -18,8 +18,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.Collections;
+
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -50,7 +52,7 @@ public class ProjectAddressControllerTest {
         requestDTO.setNumber("123");
         requestDTO.setNeighborhood("Test Neighborhood");
         requestDTO.setZipCode("12345-678");
-        requestDTO.setCityId(1L);
+        requestDTO.setCityId(1);
 
         responseDTO = new ProjectAddressResponseDTO();
         responseDTO.setStreet("Test Street");
@@ -58,7 +60,7 @@ public class ProjectAddressControllerTest {
 
     @Test
     void testCreateProjectAddress() throws Exception {
-        when(projectAddressService.createProjectAddress(anyLong(), any(ProjectAddressRequestDTO.class))).thenReturn(responseDTO);
+        when(projectAddressService.createProjectAddress(anyInt(), any(ProjectAddressRequestDTO.class))).thenReturn(responseDTO);
 
         mockMvc.perform(post("/api/projects/1/addresses")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -68,19 +70,28 @@ public class ProjectAddressControllerTest {
     }
 
     @Test
-    void testGetProjectAddress() throws Exception {
-        when(projectAddressService.getProjectAddress(anyLong())).thenReturn(responseDTO);
+    void testGetAllProjectAddresses() throws Exception {
+        when(projectAddressService.getAllProjectAddresses(anyInt())).thenReturn(Collections.singletonList(responseDTO));
 
         mockMvc.perform(get("/api/projects/1/addresses"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].street").value("Test Street"));
+    }
+
+    @Test
+    void testGetProjectAddressById() throws Exception {
+        when(projectAddressService.getProjectAddressById(anyInt(), anyInt())).thenReturn(responseDTO);
+
+        mockMvc.perform(get("/api/projects/1/addresses/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.street").value("Test Street"));
     }
 
     @Test
     void testUpdateProjectAddress() throws Exception {
-        when(projectAddressService.updateProjectAddress(anyLong(), any(ProjectAddressRequestDTO.class))).thenReturn(responseDTO);
+        when(projectAddressService.updateProjectAddress(anyInt(), anyInt(), any(ProjectAddressRequestDTO.class))).thenReturn(responseDTO);
 
-        mockMvc.perform(put("/api/projects/1/addresses")
+        mockMvc.perform(put("/api/projects/1/addresses/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDTO)))
                 .andExpect(status().isOk())
@@ -89,9 +100,9 @@ public class ProjectAddressControllerTest {
 
     @Test
     void testDeleteProjectAddress() throws Exception {
-        doNothing().when(projectAddressService).deleteProjectAddress(anyLong());
+        doNothing().when(projectAddressService).deleteProjectAddress(anyInt(), anyInt());
 
-        mockMvc.perform(delete("/api/projects/1/addresses"))
+        mockMvc.perform(delete("/api/projects/1/addresses/1"))
                 .andExpect(status().isNoContent());
     }
 }

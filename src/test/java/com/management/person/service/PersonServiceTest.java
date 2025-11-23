@@ -54,7 +54,7 @@ class PersonServiceTest {
         createDTO.setCnpj("12345678901234");
 
         Person person = new Person();
-        person.setId(1L);
+        person.setId(1);
 
         CnpjResponseDTO cnpjResponse = new CnpjResponseDTO();
         cnpjResponse.setRazaoSocial("Test Company");
@@ -80,7 +80,7 @@ class PersonServiceTest {
         createDTO.setFullName("Test User");
 
         Person person = new Person();
-        person.setId(1L);
+        person.setId(1);
 
         when(modelMapper.map(any(PersonCreateDTO.class), eq(Person.class))).thenReturn(person);
         when(personRepository.save(any(Person.class))).thenReturn(person);

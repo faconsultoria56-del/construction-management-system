@@ -37,13 +37,13 @@ class ProjectResourceServiceTest {
         // Arrange
         ProjectResourceCreateRequest request = new ProjectResourceCreateRequest();
         request.setName("New Resource");
-        request.setProjectId(1L);
+        request.setProjectId(1);
 
         Project project = new Project();
         ProjectResource resource = new ProjectResource();
         ProjectResourceResponse response = new ProjectResourceResponse();
 
-        when(projectRepository.findById(1L)).thenReturn(Optional.of(project));
+        when(projectRepository.findById(1)).thenReturn(Optional.of(project));
         when(resourceRepository.save(any(ProjectResource.class))).thenReturn(resource);
         when(resourceMapper.toResponse(resource)).thenReturn(response);
 

@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 public class ProjectResourceCreateRequest {
 
     @NotNull(message = "O ID do projeto é obrigatório")
-    private Long projectId;
+    private Integer projectId;
 
     @NotBlank(message = "O nome do recurso é obrigatório")
     private String name;

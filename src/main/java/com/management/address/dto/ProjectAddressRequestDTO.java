@@ -22,5 +22,5 @@ public class ProjectAddressRequestDTO {
     private String complement;
 
     @NotNull(message = "City ID is mandatory")
-    private Long cityId;
+    private Integer cityId;
 }

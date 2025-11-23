@@ -6,8 +6,8 @@ import java.time.LocalDateTime;
 
 @Data
 public class ProjectResourceResponse {
-    private Long id;
-    private Long projectId;
+    private Integer id;
+    private Integer projectId;
     private String name;
     private String unit;
     private BigDecimal quantity;

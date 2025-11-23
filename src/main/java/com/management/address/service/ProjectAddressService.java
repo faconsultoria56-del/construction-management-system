@@ -78,7 +78,9 @@ public class ProjectAddressService {
             throw new ResourceNotFoundException("Address not found for project with id: " + projectId);
         }
 
+        Address address = project.getAddress();
         project.setAddress(null);
         projectRepository.save(project);
+        addressRepository.delete(address);
     }
 }

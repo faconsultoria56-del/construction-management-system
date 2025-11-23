@@ -11,11 +11,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/persons")
+@Tag(name = "Organizational")
 public class PersonController {
 
     private final PersonService personService;
@@ -25,17 +28,20 @@ public class PersonController {
     }
 
     @PostMapping
+    @Operation(summary = "Creates a new person")
     public ResponseEntity<PersonDTO> createPerson(@RequestBody PersonCreateDTO createDTO) {
         PersonDTO createdPerson = personService.createPerson(createDTO);
         return new ResponseEntity<>(createdPerson, HttpStatus.CREATED);
     }
 
     @GetMapping
+    @Operation(summary = "Finds all persons")
     public ResponseEntity<List<PersonDTO>> findAll() {
         return ResponseEntity.ok(personService.findAll());
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Finds a person by ID")
     public ResponseEntity<PersonDTO> findById(@PathVariable Long id) {
         return ResponseEntity.ok(personService.findById(id));
     }

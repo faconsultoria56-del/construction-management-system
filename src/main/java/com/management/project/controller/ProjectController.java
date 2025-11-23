@@ -8,11 +8,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api")
+@Tag(name = "Projects")
 public class ProjectController {
 
     private final ProjectService projectService;
@@ -22,16 +25,19 @@ public class ProjectController {
     }
 
     @PostMapping("/projects")
+    @Operation(summary = "Creates a new project (CPF or CNPJ)")
     public ResponseEntity<ProjectResponse> create(@RequestBody @Valid ProjectCreateRequest request) {
         return ResponseEntity.ok(projectService.create(request));
     }
 
     @GetMapping("/projects")
+    @Operation(summary = "Finds all projects")
     public ResponseEntity<Page<ProjectResponse>> findAll(Pageable pageable) {
         return ResponseEntity.ok(projectService.findAll(pageable));
     }
 
     @GetMapping("/projects/{id}")
+    @Operation(summary = "Finds a project by ID")
     public ResponseEntity<ProjectResponse> findById(@PathVariable Long id) {
         return ResponseEntity.ok(projectService.findById(id));
     }

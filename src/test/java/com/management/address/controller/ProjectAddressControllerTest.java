@@ -60,7 +60,7 @@ public class ProjectAddressControllerTest {
     void testCreateProjectAddress() throws Exception {
         when(projectAddressService.createProjectAddress(anyLong(), any(ProjectAddressRequestDTO.class))).thenReturn(responseDTO);
 
-        mockMvc.perform(post("/api/projects/1/address")
+        mockMvc.perform(post("/api/projects/1/addresses")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDTO)))
                 .andExpect(status().isCreated())
@@ -71,7 +71,7 @@ public class ProjectAddressControllerTest {
     void testGetProjectAddress() throws Exception {
         when(projectAddressService.getProjectAddress(anyLong())).thenReturn(responseDTO);
 
-        mockMvc.perform(get("/api/projects/1/address"))
+        mockMvc.perform(get("/api/projects/1/addresses"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.street").value("Test Street"));
     }
@@ -80,7 +80,7 @@ public class ProjectAddressControllerTest {
     void testUpdateProjectAddress() throws Exception {
         when(projectAddressService.updateProjectAddress(anyLong(), any(ProjectAddressRequestDTO.class))).thenReturn(responseDTO);
 
-        mockMvc.perform(put("/api/projects/1/address")
+        mockMvc.perform(put("/api/projects/1/addresses")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDTO)))
                 .andExpect(status().isOk())
@@ -91,7 +91,7 @@ public class ProjectAddressControllerTest {
     void testDeleteProjectAddress() throws Exception {
         doNothing().when(projectAddressService).deleteProjectAddress(anyLong());
 
-        mockMvc.perform(delete("/api/projects/1/address"))
+        mockMvc.perform(delete("/api/projects/1/addresses"))
                 .andExpect(status().isNoContent());
     }
 }

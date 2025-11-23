@@ -9,38 +9,46 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "Resources")
 public class ProjectResourceController {
 
     private final ProjectResourceService resourceService;
 
     @PostMapping("/resources")
+    @Operation(summary = "Creates a new resource")
     public ResponseEntity<ProjectResourceResponse> create(@Valid @RequestBody ProjectResourceCreateRequest request) {
         ProjectResourceResponse createdResource = resourceService.create(request);
         return new ResponseEntity<>(createdResource, HttpStatus.CREATED);
     }
 
     @GetMapping("/resources/{id}")
-    public ResponseEntity<ProjectResourceResponse> getById(@PathVariable Integer id) {
+    @Operation(summary = "Finds a resource by ID")
+    public ResponseEntity<ProjectResourceResponse> getById(@PathVariable Long id) {
         return ResponseEntity.ok(resourceService.findById(id));
     }
 
     @GetMapping("/projects/{projectId}/resources")
-    public ResponseEntity<List<ProjectResourceResponse>> getByProject(@PathVariable Integer projectId) {
+    @Operation(summary = "Finds all resources for a project")
+    public ResponseEntity<List<ProjectResourceResponse>> getByProject(@PathVariable Long projectId) {
         return ResponseEntity.ok(resourceService.listByProject(projectId));
     }
 
     @PutMapping("/resources/{id}")
-    public ResponseEntity<ProjectResourceResponse> update(@PathVariable Integer id, @Valid @RequestBody ProjectResourceUpdateRequest request) {
+    @Operation(summary = "Updates a resource")
+    public ResponseEntity<ProjectResourceResponse> update(@PathVariable Long id, @Valid @RequestBody ProjectResourceUpdateRequest request) {
         return ResponseEntity.ok(resourceService.update(id, request));
     }
 
     @DeleteMapping("/resources/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Integer id) {
+    @Operation(summary = "Deletes a resource")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         resourceService.delete(id);
         return ResponseEntity.noContent().build();
     }

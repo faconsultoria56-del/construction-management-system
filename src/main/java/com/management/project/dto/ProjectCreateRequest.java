@@ -1,11 +1,13 @@
 package com.management.project.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 import java.time.LocalDate;
 
 @Data
+@Schema(description = "The request must include either fkCompanyId or fkOwnerPersonId, but not both.")
 public class ProjectCreateRequest {
 
     @NotBlank
@@ -17,10 +19,10 @@ public class ProjectCreateRequest {
     private LocalDate endDate;
 
     // Empresa (CNPJ)
-    private Integer companyId;
+    private Long companyId;
 
     // Pessoa física (CPF)
-    private Integer ownerPersonId;
+    private Long ownerPersonId;
 
-    private Integer addressId;
+    private Long addressId;
 }

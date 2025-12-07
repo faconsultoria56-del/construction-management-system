@@ -1,7 +1,9 @@
 package com.management.project.controller;
 
 import com.management.project.dto.ProjectCreateRequest;
+import com.management.project.dto.ProjectFinancialSummaryDTO;
 import com.management.project.dto.ProjectResponse;
+import com.management.project.service.ProjectFinancialService;
 import com.management.project.service.ProjectService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -14,14 +16,16 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/v1")
 @Tag(name = "Projects")
 public class ProjectController {
 
     private final ProjectService projectService;
+    private final ProjectFinancialService projectFinancialService;
 
-    public ProjectController(ProjectService projectService) {
+    public ProjectController(ProjectService projectService, ProjectFinancialService projectFinancialService) {
         this.projectService = projectService;
+        this.projectFinancialService = projectFinancialService;
     }
 
     @PostMapping("/projects")
@@ -50,5 +54,11 @@ public class ProjectController {
     @GetMapping("/persons/{personId}/projects")
     public ResponseEntity<List<ProjectResponse>> findByPersonId(@PathVariable Integer personId) {
         return ResponseEntity.ok(projectService.findByPersonId(personId));
+    }
+
+    @GetMapping("/projects/{projectId}/financial-summary")
+    @Operation(summary = "Gets the financial summary for a project")
+    public ResponseEntity<ProjectFinancialSummaryDTO> getFinancialSummary(@PathVariable Integer projectId) {
+        return ResponseEntity.ok(projectFinancialService.getProjectFinancialSummary(projectId));
     }
 }

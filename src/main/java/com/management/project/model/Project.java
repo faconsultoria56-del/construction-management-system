@@ -6,6 +6,7 @@ import com.management.person.model.Person;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "project", schema = "management")
@@ -14,7 +15,9 @@ public class Project {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(nullable = false)
     private String name;
+
     private String description;
 
     @Column(name = "start_date")
@@ -24,16 +27,19 @@ public class Project {
     private LocalDate endDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "fk_company")
+    @JoinColumn(name = "fk_company", nullable = true)
     private Company company;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "fk_owner_person")
+    @JoinColumn(name = "fk_owner_person", nullable = true)
     private Person ownerPerson;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "fk_address")
+    @JoinColumn(name = "fk_address", nullable = false)
     private Address address;
+
+    @OneToMany(mappedBy = "project")
+    private List<ProjectMember> projectMembers;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -116,6 +122,14 @@ public class Project {
 
     public void setAddress(Address address) {
         this.address = address;
+    }
+
+    public List<ProjectMember> getProjectMembers() {
+        return projectMembers;
+    }
+
+    public void setProjectMembers(List<ProjectMember> projectMembers) {
+        this.projectMembers = projectMembers;
     }
 
     public LocalDateTime getCreatedAt() {

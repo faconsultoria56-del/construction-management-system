@@ -1,10 +1,11 @@
 package com.management.person.model;
 
 import com.management.address.model.Address;
-import com.management.role.model.Role;
+import com.management.company.model.CompanyMember;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "person", schema = "management")
@@ -13,23 +14,26 @@ public class Person {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "full_name")
+    @Column(name = "full_name", nullable = false)
     private String fullName;
 
+    @Column(nullable = false)
     private String document;
+
+    @Column(nullable = false)
     private String email;
+
     private String phone;
 
     @Column(name = "birth_date")
     private LocalDate birthDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "fk_role")
-    private Role role;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_address")
     private Address address;
+
+    @OneToMany(mappedBy = "person")
+    private List<CompanyMember> companyMembers;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -97,14 +101,6 @@ public class Person {
         this.birthDate = birthDate;
     }
 
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
     public Address getAddress() {
         return address;
     }
@@ -127,5 +123,13 @@ public class Person {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public List<CompanyMember> getCompanyMembers() {
+        return companyMembers;
+    }
+
+    public void setCompanyMembers(List<CompanyMember> companyMembers) {
+        this.companyMembers = companyMembers;
     }
 }

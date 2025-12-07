@@ -10,6 +10,9 @@ public class State {
     private Integer id;
 
     @Column(unique = true, nullable = false)
+    private String name;
+
+    @Column(unique = true, nullable = false)
     private String uf;
 
     // Getters and Setters
@@ -19,6 +22,14 @@ public class State {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getUf() {

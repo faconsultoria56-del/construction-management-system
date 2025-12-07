@@ -20,7 +20,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -81,7 +80,7 @@ public class ProjectService {
         if (request.getAddressId() != null) {
             Address address = addressRepository.findById(request.getAddressId())
                 .orElseThrow(() -> new BusinessException("Endereço não encontrado"));
-            project.setAddresses(Collections.singletonList(address));
+            project.setAddress(address);
         }
 
         Project saved = projectRepository.save(project);

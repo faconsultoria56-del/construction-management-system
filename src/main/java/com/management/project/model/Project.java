@@ -15,7 +15,9 @@ public class Project {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(nullable = false)
     private String name;
+
     private String description;
 
     @Column(name = "start_date")
@@ -32,8 +34,12 @@ public class Project {
     @JoinColumn(name = "fk_owner_person", nullable = true)
     private Person ownerPerson;
 
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Address> addresses;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_address", nullable = false)
+    private Address address;
+
+    @OneToMany(mappedBy = "project")
+    private List<ProjectMember> projectMembers;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -110,12 +116,20 @@ public class Project {
         this.ownerPerson = ownerPerson;
     }
 
-    public List<Address> getAddresses() {
-        return addresses;
+    public Address getAddress() {
+        return address;
     }
 
-    public void setAddresses(List<Address> addresses) {
-        this.addresses = addresses;
+    public void setAddress(Address address) {
+        this.address = address;
+    }
+
+    public List<ProjectMember> getProjectMembers() {
+        return projectMembers;
+    }
+
+    public void setProjectMembers(List<ProjectMember> projectMembers) {
+        this.projectMembers = projectMembers;
     }
 
     public LocalDateTime getCreatedAt() {

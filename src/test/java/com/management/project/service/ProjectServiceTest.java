@@ -158,7 +158,7 @@ class ProjectServiceTest {
         project.setId(1);
         project.setName(projectCreateRequest.getName());
         project.setCompany(company);
-        project.setAddresses(Collections.singletonList(address));
+        project.setAddress(address);
         when(projectRepository.save(any(Project.class))).thenReturn(project);
 
         ProjectResponse projectResponse = new ProjectResponse();

@@ -11,10 +11,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 @RestController
-@RequestMapping("/api/projects/{projectId}/addresses")
+@RequestMapping("/api/projects/{projectId}/address")
 @Tag(name = "Projects")
 public class ProjectAddressController {
 
@@ -29,30 +29,23 @@ public class ProjectAddressController {
     }
 
     @GetMapping
-    @Operation(summary = "Finds all addresses for a project")
-    public ResponseEntity<List<ProjectAddressResponseDTO>> getAllProjectAddresses(@PathVariable Integer projectId) {
-        List<ProjectAddressResponseDTO> responseDTO = projectAddressService.getAllProjectAddresses(projectId);
+    @Operation(summary = "Finds the address for a project")
+    public ResponseEntity<ProjectAddressResponseDTO> getProjectAddress(@PathVariable Integer projectId) {
+        ProjectAddressResponseDTO responseDTO = projectAddressService.getProjectAddress(projectId);
         return ResponseEntity.ok(responseDTO);
     }
 
-    @GetMapping("/{addressId}")
-    @Operation(summary = "Finds an address by ID for a project")
-    public ResponseEntity<ProjectAddressResponseDTO> getProjectAddressById(@PathVariable Integer projectId, @PathVariable Integer addressId) {
-        ProjectAddressResponseDTO responseDTO = projectAddressService.getProjectAddressById(projectId, addressId);
+    @PutMapping
+    @Operation(summary = "Updates the address for a project")
+    public ResponseEntity<ProjectAddressResponseDTO> updateProjectAddress(@PathVariable Integer projectId, @Valid @RequestBody ProjectAddressRequestDTO requestDTO) {
+        ProjectAddressResponseDTO responseDTO = projectAddressService.updateProjectAddress(projectId, requestDTO);
         return ResponseEntity.ok(responseDTO);
     }
 
-    @PutMapping("/{addressId}")
-    @Operation(summary = "Updates an address for a project")
-    public ResponseEntity<ProjectAddressResponseDTO> updateProjectAddress(@PathVariable Integer projectId, @PathVariable Integer addressId, @Valid @RequestBody ProjectAddressRequestDTO requestDTO) {
-        ProjectAddressResponseDTO responseDTO = projectAddressService.updateProjectAddress(projectId, addressId, requestDTO);
-        return ResponseEntity.ok(responseDTO);
-    }
-
-    @DeleteMapping("/{addressId}")
-    @Operation(summary = "Deletes an address for a project")
-    public ResponseEntity<Void> deleteProjectAddress(@PathVariable Integer projectId, @PathVariable Integer addressId) {
-        projectAddressService.deleteProjectAddress(projectId, addressId);
+    @DeleteMapping
+    @Operation(summary = "Deletes the address for a project")
+    public ResponseEntity<Void> deleteProjectAddress(@PathVariable Integer projectId) {
+        projectAddressService.deleteProjectAddress(projectId);
         return ResponseEntity.noContent().build();
     }
 }

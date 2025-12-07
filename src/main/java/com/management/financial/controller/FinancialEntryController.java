@@ -1,8 +1,10 @@
 package com.management.financial.controller;
 
-import com.management.financial.dto.FinancialEntryDTO;
+import com.management.financial.dto.FinancialEntryRequestDTO;
+import com.management.financial.dto.FinancialEntryResponseDTO;
 import com.management.financial.service.FinancialEntryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,23 +18,27 @@ public class FinancialEntryController {
     private FinancialEntryService financialEntryService;
 
     @PostMapping
-    public FinancialEntryDTO createFinancialEntry(@RequestBody FinancialEntryDTO financialEntryDTO) {
-        return financialEntryService.createFinancialEntry(financialEntryDTO);
+    public ResponseEntity<FinancialEntryResponseDTO> createFinancialEntry(@RequestBody FinancialEntryRequestDTO requestDTO) {
+        FinancialEntryResponseDTO responseDTO = financialEntryService.createFinancialEntry(requestDTO);
+        return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
     }
 
     @GetMapping
-    public List<FinancialEntryDTO> getAllFinancialEntries() {
-        return financialEntryService.getAllFinancialEntries();
+    public ResponseEntity<List<FinancialEntryResponseDTO>> getAllFinancialEntries() {
+        List<FinancialEntryResponseDTO> responseDTOs = financialEntryService.getAllFinancialEntries();
+        return new ResponseEntity<>(responseDTOs, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public FinancialEntryDTO getFinancialEntryById(@PathVariable Integer id) {
-        return financialEntryService.getFinancialEntryById(id);
+    public ResponseEntity<FinancialEntryResponseDTO> getFinancialEntryById(@PathVariable Integer id) {
+        FinancialEntryResponseDTO responseDTO = financialEntryService.getFinancialEntryById(id);
+        return new ResponseEntity<>(responseDTO, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public FinancialEntryDTO updateFinancialEntry(@PathVariable Integer id, @RequestBody FinancialEntryDTO financialEntryDTO) {
-        return financialEntryService.updateFinancialEntry(id, financialEntryDTO);
+    public ResponseEntity<FinancialEntryResponseDTO> updateFinancialEntry(@PathVariable Integer id, @RequestBody FinancialEntryRequestDTO requestDTO) {
+        FinancialEntryResponseDTO responseDTO = financialEntryService.updateFinancialEntry(id, requestDTO);
+        return new ResponseEntity<>(responseDTO, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

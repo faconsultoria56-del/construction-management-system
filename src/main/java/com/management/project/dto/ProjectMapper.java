@@ -24,8 +24,8 @@ public class ProjectMapper {
         if (project.getOwnerPerson() != null) {
             response.setOwnerPersonId(project.getOwnerPerson().getId());
         }
-        if (project.getAddresses() != null && !project.getAddresses().isEmpty()) {
-            response.setAddressId(project.getAddresses().get(0).getId());
+        if (project.getAddress() != null) {
+            response.setAddressId(project.getAddress().getId());
         }
         return response;
     }

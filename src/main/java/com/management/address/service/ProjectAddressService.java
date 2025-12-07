@@ -12,9 +12,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Service
 public class ProjectAddressService {
 
@@ -38,41 +35,31 @@ public class ProjectAddressService {
         address.setCity(cityRepository.findById(requestDTO.getCityId())
                 .orElseThrow(() -> new ResourceNotFoundException("City not found with id: " + requestDTO.getCityId())));
 
-        project.getAddresses().add(address);
+        project.setAddress(address);
         projectRepository.save(project);
 
         return modelMapper.map(address, ProjectAddressResponseDTO.class);
     }
 
-    public List<ProjectAddressResponseDTO> getAllProjectAddresses(Integer projectId) {
+    public ProjectAddressResponseDTO getProjectAddress(Integer projectId) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ResourceNotFoundException("Project not found with id: " + projectId));
 
-        return project.getAddresses().stream()
-                .map(address -> modelMapper.map(address, ProjectAddressResponseDTO.class))
-                .collect(Collectors.toList());
+        if (project.getAddress() == null) {
+            throw new ResourceNotFoundException("Address not found for project with id: " + projectId);
+        }
+
+        return modelMapper.map(project.getAddress(), ProjectAddressResponseDTO.class);
     }
 
-    public ProjectAddressResponseDTO getProjectAddressById(Integer projectId, Integer addressId) {
+    public ProjectAddressResponseDTO updateProjectAddress(Integer projectId, ProjectAddressRequestDTO requestDTO) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ResourceNotFoundException("Project not found with id: " + projectId));
 
-        Address address = project.getAddresses().stream()
-                .filter(a -> a.getId().equals(addressId))
-                .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException("Address not found with id: " + addressId));
-
-        return modelMapper.map(address, ProjectAddressResponseDTO.class);
-    }
-
-    public ProjectAddressResponseDTO updateProjectAddress(Integer projectId, Integer addressId, ProjectAddressRequestDTO requestDTO) {
-        Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new ResourceNotFoundException("Project not found with id: " + projectId));
-
-        Address address = project.getAddresses().stream()
-                .filter(a -> a.getId().equals(addressId))
-                .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException("Address not found with id: " + addressId));
+        Address address = project.getAddress();
+        if (address == null) {
+            throw new ResourceNotFoundException("Address not found for project with id: " + projectId);
+        }
 
         modelMapper.map(requestDTO, address);
         address.setCity(cityRepository.findById(requestDTO.getCityId())
@@ -83,16 +70,13 @@ public class ProjectAddressService {
         return modelMapper.map(address, ProjectAddressResponseDTO.class);
     }
 
-    public void deleteProjectAddress(Integer projectId, Integer addressId) {
+    public void deleteProjectAddress(Integer projectId) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ResourceNotFoundException("Project not found with id: " + projectId));
 
-        Address address = project.getAddresses().stream()
-                .filter(a -> a.getId().equals(addressId))
-                .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException("Address not found with id: " + addressId));
-
-        project.getAddresses().remove(address);
-        projectRepository.save(project);
+        if (project.getAddress() != null) {
+            project.setAddress(null);
+            projectRepository.save(project);
+        }
     }
 }

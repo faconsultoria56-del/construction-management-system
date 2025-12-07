@@ -1,9 +1,11 @@
 package com.management.address.model;
 
 import com.management.city.model.City;
-import com.management.project.model.Project;
+import com.management.company.model.Company;
+import com.management.person.model.Person;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "address", schema = "management")
@@ -12,26 +14,45 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(nullable = false)
     private String street;
+
+    @Column(nullable = false)
     private String number;
+
+    @Column(nullable = false)
     private String neighborhood;
+
+    @Column(nullable = false)
     private String zipCode;
+
     private String complement;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_city", nullable = false)
     private City city;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "fk_project")
-    private Project project;
+    @OneToMany(mappedBy = "address")
+    private List<Company> companies;
+
+    @OneToMany(mappedBy = "address")
+    private List<Person> persons;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
     }
 
     // Getters and Setters
@@ -91,12 +112,20 @@ public class Address {
         this.city = city;
     }
 
-    public Project getProject() {
-        return project;
+    public List<Company> getCompanies() {
+        return companies;
     }
 
-    public void setProject(Project project) {
-        this.project = project;
+    public void setCompanies(List<Company> companies) {
+        this.companies = companies;
+    }
+
+    public List<Person> getPersons() {
+        return persons;
+    }
+
+    public void setPersons(List<Person> persons) {
+        this.persons = persons;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -105,5 +134,13 @@ public class Address {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

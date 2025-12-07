@@ -1,6 +1,7 @@
 package com.management.company.model;
 
 import com.management.address.model.Address;
+import com.management.plantype.model.PlanType;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -11,9 +12,10 @@ public class Company {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(unique = true, nullable = false)
     private String document;
 
-    @Column(name = "registered_name")
+    @Column(name = "registered_name", nullable = false)
     private String registeredName;
 
     @Column(name = "trade_name")
@@ -29,12 +31,25 @@ public class Company {
     @JoinColumn(name = "fk_address")
     private Address address;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_plan_type", nullable = false)
+    private PlanType planType;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
 
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
     }
 
     // Getters and Setters
@@ -101,5 +116,21 @@ public class Company {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public PlanType getPlanType() {
+        return planType;
+    }
+
+    public void setPlanType(PlanType planType) {
+        this.planType = planType;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

@@ -62,7 +62,7 @@ public class ProjectAddressControllerTest {
     void testCreateProjectAddress() throws Exception {
         when(projectAddressService.createProjectAddress(anyInt(), any(ProjectAddressRequestDTO.class))).thenReturn(responseDTO);
 
-        mockMvc.perform(post("/api/projects/1/addresses")
+        mockMvc.perform(post("/api/projects/1/address")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDTO)))
                 .andExpect(status().isCreated())
@@ -70,28 +70,19 @@ public class ProjectAddressControllerTest {
     }
 
     @Test
-    void testGetAllProjectAddresses() throws Exception {
-        when(projectAddressService.getAllProjectAddresses(anyInt())).thenReturn(Collections.singletonList(responseDTO));
+    void testGetProjectAddress() throws Exception {
+        when(projectAddressService.getProjectAddress(anyInt())).thenReturn(responseDTO);
 
-        mockMvc.perform(get("/api/projects/1/addresses"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].street").value("Test Street"));
-    }
-
-    @Test
-    void testGetProjectAddressById() throws Exception {
-        when(projectAddressService.getProjectAddressById(anyInt(), anyInt())).thenReturn(responseDTO);
-
-        mockMvc.perform(get("/api/projects/1/addresses/1"))
+        mockMvc.perform(get("/api/projects/1/address"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.street").value("Test Street"));
     }
 
     @Test
     void testUpdateProjectAddress() throws Exception {
-        when(projectAddressService.updateProjectAddress(anyInt(), anyInt(), any(ProjectAddressRequestDTO.class))).thenReturn(responseDTO);
+        when(projectAddressService.updateProjectAddress(anyInt(), any(ProjectAddressRequestDTO.class))).thenReturn(responseDTO);
 
-        mockMvc.perform(put("/api/projects/1/addresses/1")
+        mockMvc.perform(put("/api/projects/1/address")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDTO)))
                 .andExpect(status().isOk())
@@ -100,9 +91,9 @@ public class ProjectAddressControllerTest {
 
     @Test
     void testDeleteProjectAddress() throws Exception {
-        doNothing().when(projectAddressService).deleteProjectAddress(anyInt(), anyInt());
+        doNothing().when(projectAddressService).deleteProjectAddress(anyInt());
 
-        mockMvc.perform(delete("/api/projects/1/addresses/1"))
+        mockMvc.perform(delete("/api/projects/1/address"))
                 .andExpect(status().isNoContent());
     }
 }

@@ -13,11 +13,15 @@ public class Person {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "full_name")
+    @Column(name = "full_name", nullable = false)
     private String fullName;
 
+    @Column(nullable = false)
     private String document;
+
+    @Column(nullable = false)
     private String email;
+
     private String phone;
 
     @Column(name = "birth_date")

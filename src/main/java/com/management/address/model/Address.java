@@ -1,6 +1,7 @@
 package com.management.address.model;
 
 import com.management.city.model.City;
+import com.management.project.model.Project;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -20,6 +21,10 @@ public class Address {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_city", nullable = false)
     private City city;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_project")
+    private Project project;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -84,6 +89,14 @@ public class Address {
 
     public void setCity(City city) {
         this.city = city;
+    }
+
+    public Project getProject() {
+        return project;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
     }
 
     public LocalDateTime getCreatedAt() {

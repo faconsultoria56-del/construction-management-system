@@ -32,8 +32,7 @@ public class Project {
     @JoinColumn(name = "fk_owner_person", nullable = true)
     private Person ownerPerson;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "fk_project")
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Address> addresses;
 
     @Column(name = "created_at", nullable = false, updatable = false)

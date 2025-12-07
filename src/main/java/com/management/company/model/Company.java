@@ -4,6 +4,7 @@ import com.management.address.model.Address;
 import com.management.plantype.model.PlanType;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "company", schema = "management")
@@ -34,6 +35,9 @@ public class Company {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_plan_type", nullable = false)
     private PlanType planType;
+
+    @OneToMany(mappedBy = "company")
+    private List<CompanyMember> companyMembers;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -132,5 +136,13 @@ public class Company {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public List<CompanyMember> getCompanyMembers() {
+        return companyMembers;
+    }
+
+    public void setCompanyMembers(List<CompanyMember> companyMembers) {
+        this.companyMembers = companyMembers;
     }
 }

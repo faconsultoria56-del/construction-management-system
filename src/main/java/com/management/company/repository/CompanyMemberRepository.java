@@ -6,10 +6,13 @@ import com.management.person.model.Person;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface CompanyMemberRepository extends JpaRepository<CompanyMember, Integer> {
 
     Optional<CompanyMember> findByCompanyAndPerson(Company company, Person person);
+    List<CompanyMember> findByCompanyId(Integer companyId);
+    Optional<CompanyMember> findByCompanyIdAndPersonId(Integer companyId, Integer personId);
 }

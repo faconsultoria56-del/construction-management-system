@@ -8,18 +8,26 @@ import com.management.city.repository.CityRepository;
 import com.management.city.repository.StateRepository;
 import com.management.company.dto.CnpjResponseDTO;
 import com.management.company.model.Company;
-import com.management.company.model.CompanyPartner;
-import com.management.company.repository.CompanyPartnerRepository;
+import com.management.company.model.CompanyMember;
+import com.management.company.repository.CompanyMemberRepository;
 import com.management.company.repository.CompanyRepository;
 import com.management.company.service.BrasilApiService;
+import com.management.documenttype.model.DocumentType;
+import com.management.documenttype.repository.DocumentTypeRepository;
 import com.management.person.dto.PersonCreateDTO;
-import com.management.company.repository.CompanyPartnerRepository;
 import com.management.person.dto.PersonDTO;
 import com.management.person.model.Person;
 import com.management.person.repository.PersonRepository;
+import com.management.persondocument.model.PersonDocument;
+import com.management.persondocument.repository.PersonDocumentRepository;
 import com.management.project.exception.BusinessException;
 import com.management.project.exception.ResourceNotFoundException;
+import com.management.role.model.Role;
+import com.management.role.repository.RoleRepository;
+import com.management.useraccount.model.UserAccount;
+import com.management.useraccount.repository.UserAccountRepository;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,32 +39,41 @@ public class PersonService {
 
     private final PersonRepository personRepository;
     private final CompanyRepository companyRepository;
-    private final CompanyPartnerRepository companyPartnerRepository;
     private final BrasilApiService brasilApiService;
     private final AddressRepository addressRepository;
     private final CityRepository cityRepository;
     private final StateRepository stateRepository;
     private final ModelMapper modelMapper;
+    private final PasswordEncoder passwordEncoder;
+    private final UserAccountRepository userAccountRepository;
+    private final PersonDocumentRepository personDocumentRepository;
+    private final DocumentTypeRepository documentTypeRepository;
+    private final RoleRepository roleRepository;
+    private final CompanyMemberRepository companyMemberRepository;
 
-    public PersonService(PersonRepository personRepository, CompanyRepository companyRepository, CompanyPartnerRepository companyPartnerRepository, BrasilApiService brasilApiService, AddressRepository addressRepository, CityRepository cityRepository, StateRepository stateRepository, ModelMapper modelMapper) {
+
+    public PersonService(PersonRepository personRepository, CompanyRepository companyRepository, BrasilApiService brasilApiService, AddressRepository addressRepository, CityRepository cityRepository, StateRepository stateRepository, ModelMapper modelMapper, PasswordEncoder passwordEncoder, UserAccountRepository userAccountRepository, PersonDocumentRepository personDocumentRepository, DocumentTypeRepository documentTypeRepository, RoleRepository roleRepository, CompanyMemberRepository companyMemberRepository) {
         this.personRepository = personRepository;
         this.companyRepository = companyRepository;
-        this.companyPartnerRepository = companyPartnerRepository;
         this.brasilApiService = brasilApiService;
         this.addressRepository = addressRepository;
         this.cityRepository = cityRepository;
         this.stateRepository = stateRepository;
         this.modelMapper = modelMapper;
+        this.passwordEncoder = passwordEncoder;
+        this.userAccountRepository = userAccountRepository;
+        this.personDocumentRepository = personDocumentRepository;
+        this.documentTypeRepository = documentTypeRepository;
+        this.roleRepository = roleRepository;
+        this.companyMemberRepository = companyMemberRepository;
     }
 
     @Transactional
     public PersonDTO createPerson(PersonCreateDTO createDTO) {
-        Person person = modelMapper.map(createDTO, Person.class);
-        Person savedPerson = personRepository.save(person);
-
+        // 1. Company Creation (if CNPJ is provided)
+        Company savedCompany = null;
         if (createDTO.getCnpj() != null && !createDTO.getCnpj().isEmpty()) {
             CnpjResponseDTO cnpjData = brasilApiService.getCnpjData(createDTO.getCnpj()).block();
-
             if (cnpjData != null) {
                 Company company = new Company();
                 company.setDocument(createDTO.getCnpj());
@@ -89,15 +106,38 @@ public class PersonService {
                     Address savedAddress = addressRepository.save(address);
                     company.setAddress(savedAddress);
                 }
-
-                Company savedCompany = companyRepository.save(company);
-
-                CompanyPartner partner = new CompanyPartner();
-                partner.setPerson(savedPerson);
-                partner.setCompany(savedCompany);
-                companyPartnerRepository.save(partner);
+                savedCompany = companyRepository.save(company);
             }
         }
+
+        // 2. Person Creation
+        Person person = modelMapper.map(createDTO, Person.class);
+        Person savedPerson = personRepository.save(person);
+
+        // 3. Document Creation
+        DocumentType type = documentTypeRepository.findByCode(createDTO.getDocumentType())
+                .orElseThrow(() -> new BusinessException("DocumentType not found for code: " + createDTO.getDocumentType()));
+        PersonDocument doc = new PersonDocument(savedPerson, type, createDTO.getDocument());
+        personDocumentRepository.save(doc);
+
+        // 4. User Account Creation
+        UserAccount account = new UserAccount();
+        account.setEmail(createDTO.getEmail());
+        account.setPasswordHash(passwordEncoder.encode(createDTO.getPassword()));
+        account.setPerson(savedPerson);
+        userAccountRepository.save(account);
+
+        // 5. Role Assignment ("Owner")
+        if (savedCompany != null) {
+            Role ownerRole = roleRepository.findByName("Owner")
+                    .orElseThrow(() -> new BusinessException("Role 'Owner' not found."));
+            CompanyMember companyMember = new CompanyMember();
+            companyMember.setCompany(savedCompany);
+            companyMember.setPerson(savedPerson);
+            companyMember.setRole(ownerRole);
+            companyMemberRepository.save(companyMember);
+        }
+
         return modelMapper.map(savedPerson, PersonDTO.class);
     }
 
@@ -115,9 +155,10 @@ public class PersonService {
     }
 
     public List<PersonDTO> findPersonsByCompanyId(Integer companyId) {
-        return companyPartnerRepository.findByCompanyId(companyId)
+        return companyMemberRepository.findByCompanyId(companyId)
                 .stream()
-                .map(companyPartner -> modelMapper.map(companyPartner.getPerson(), PersonDTO.class))
+                .map(CompanyMember::getPerson)
+                .map(person -> modelMapper.map(person, PersonDTO.class))
                 .collect(Collectors.toList());
     }
 }

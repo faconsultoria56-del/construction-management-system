@@ -3,7 +3,6 @@ package com.management.authorization.service;
 import com.management.company.model.Company;
 import com.management.company.model.CompanyMember;
 import com.management.company.repository.CompanyMemberRepository;
-import com.management.person.model.Person;
 import com.management.project.model.Project;
 import com.management.project.repository.ProjectRepository;
 import com.management.role.model.Role;
@@ -33,10 +32,7 @@ public class AuthorizationService {
             return false;
         }
 
-        Person person = new Person();
-        person.setId(personId);
-
-        Optional<CompanyMember> companyMemberOptional = companyMemberRepository.findByCompanyAndPerson(company, person);
+        Optional<CompanyMember> companyMemberOptional = companyMemberRepository.findByCompanyIdAndPersonId(company.getId(), personId);
         if (companyMemberOptional.isEmpty()) {
             return false;
         }

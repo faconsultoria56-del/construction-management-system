@@ -19,28 +19,33 @@ public class FinancialAccessInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
-        String personIdHeader = request.getHeader("X-Mock-User-ID");
-        if (personIdHeader == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return false;
-        }
-        Integer personId = Integer.parseInt(personIdHeader);
+        try {
+            String personIdHeader = request.getHeader("X-Mock-User-ID");
+            if (personIdHeader == null) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return false;
+            }
+            Integer personId = Integer.parseInt(personIdHeader);
 
-        @SuppressWarnings("unchecked")
-        Map<String, String> pathVariables = (Map<String, String>) request
-                .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
-        String projectIdString = pathVariables.get("projectId");
-        if (projectIdString == null) {
+            @SuppressWarnings("unchecked")
+            Map<String, String> pathVariables = (Map<String, String>) request
+                    .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+            String projectIdString = pathVariables.get("projectId");
+            if (projectIdString == null) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                return false;
+            }
+            Integer projectId = Integer.parseInt(projectIdString);
+
+            if (!authorizationService.hasFinancialAccess(personId, projectId)) {
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                return false;
+            }
+
+            return true;
+        } catch (NumberFormatException e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return false;
         }
-        Integer projectId = Integer.parseInt(projectIdString);
-
-        if (!authorizationService.hasFinancialAccess(personId, projectId)) {
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            return false;
-        }
-
-        return true;
     }
 }

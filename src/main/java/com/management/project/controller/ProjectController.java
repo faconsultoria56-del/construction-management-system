@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 
@@ -58,6 +59,7 @@ public class ProjectController {
 
     @GetMapping("/projects/{projectId}/financial-summary")
     @Operation(summary = "Gets the financial summary for a project")
+    @PreAuthorize("hasAnyRole('Owner', 'Manager')")
     public ResponseEntity<ProjectFinancialSummaryDTO> getFinancialSummary(@PathVariable Integer projectId) {
         return ResponseEntity.ok(projectFinancialService.getProjectFinancialSummary(projectId));
     }

@@ -18,6 +18,9 @@ public class Person {
     private String fullName;
 
     @Column(nullable = false)
+    private String document;
+
+    @Column(nullable = false)
     private String email;
 
     private String phone;
@@ -64,6 +67,14 @@ public class Person {
 
     public void setFullName(String fullName) {
         this.fullName = fullName;
+    }
+
+    public String getDocument() {
+        return document;
+    }
+
+    public void setDocument(String document) {
+        this.document = document;
     }
 
     public String getEmail() {

@@ -7,6 +7,7 @@ import java.time.LocalDate;
 public class PersonDTO {
     private Integer id;
     private String fullName;
+    private String document;
     private String email;
     private LocalDate birthDate;
 }

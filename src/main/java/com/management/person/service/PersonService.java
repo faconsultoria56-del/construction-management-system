@@ -70,30 +70,67 @@ public class PersonService {
 
     @Transactional
     public PersonDTO createPerson(PersonCreateDTO createDTO) {
-        // Passo A: A Pessoa
+        // 1. Company Creation (if CNPJ is provided)
+        Company savedCompany = null;
+        if (createDTO.getCnpj() != null && !createDTO.getCnpj().isEmpty()) {
+            CnpjResponseDTO cnpjData = brasilApiService.getCnpjData(createDTO.getCnpj()).block();
+            if (cnpjData != null) {
+                Company company = new Company();
+                company.setDocument(createDTO.getCnpj());
+                company.setRegisteredName(cnpjData.getRazaoSocial());
+                company.setTradeName(cnpjData.getNomeFantasia());
+                company.setRegistrationStatusDescription(cnpjData.getDescricaoSituacaoCadastral());
+                company.setPrimaryPhone(cnpjData.getDddTelefone1());
+
+                if (cnpjData.getCep() != null) {
+                    Address address = new Address();
+                    address.setStreet(cnpjData.getLogradouro());
+                    address.setNumber(cnpjData.getNumero());
+                    address.setComplement(cnpjData.getComplemento());
+                    address.setNeighborhood(cnpjData.getBairro());
+                    address.setZipCode(cnpjData.getCep());
+
+                    State state = stateRepository.findByUf(cnpjData.getUf()).orElseGet(() -> {
+                        State newState = new State();
+                        newState.setUf(cnpjData.getUf());
+                        return stateRepository.save(newState);
+                    });
+
+                    City city = cityRepository.findByNameAndState(cnpjData.getMunicipio(), state).orElseGet(() -> {
+                        City newCity = new City();
+                        newCity.setName(cnpjData.getMunicipio());
+                        newCity.setState(state);
+                        return cityRepository.save(newCity);
+                    });
+                    address.setCity(city);
+                    Address savedAddress = addressRepository.save(address);
+                    company.setAddress(savedAddress);
+                }
+                savedCompany = companyRepository.save(company);
+            }
+        }
+
+        // 2. Person Creation
         Person person = modelMapper.map(createDTO, Person.class);
         Person savedPerson = personRepository.save(person);
 
-        // Passo B: O Documento
-        DocumentType documentType = documentTypeRepository.findByCode(createDTO.getDocumentType())
+        // 3. Document Creation
+        DocumentType type = documentTypeRepository.findByCode(createDTO.getDocumentType())
                 .orElseThrow(() -> new BusinessException("DocumentType not found for code: " + createDTO.getDocumentType()));
-        PersonDocument personDocument = new PersonDocument(savedPerson, documentType, createDTO.getDocument());
-        personDocumentRepository.save(personDocument);
+        PersonDocument doc = new PersonDocument(savedPerson, type, createDTO.getDocument());
+        personDocumentRepository.save(doc);
 
-        // Passo C: A Conta e Segurança
-        UserAccount userAccount = new UserAccount();
-        userAccount.setEmail(createDTO.getEmail());
-        userAccount.setPasswordHash(passwordEncoder.encode(createDTO.getPassword()));
-        userAccount.setPerson(savedPerson);
-        userAccountRepository.save(userAccount);
+        // 4. User Account Creation
+        UserAccount account = new UserAccount();
+        account.setEmail(createDTO.getEmail());
+        account.setPasswordHash(passwordEncoder.encode(createDTO.getPassword()));
+        account.setPerson(savedPerson);
+        userAccountRepository.save(account);
 
-        // Passo D: A Empresa e Passo E: O Papel (Role)
-        if (createDTO.getCnpj() != null && !createDTO.getCnpj().isEmpty()) {
-            Company savedCompany = createCompanyFromCnpj(createDTO.getCnpj());
-
+        // 5. Role Assignment ("Owner")
+        if (savedCompany != null) {
             Role ownerRole = roleRepository.findByName("Owner")
                     .orElseThrow(() -> new BusinessException("Role 'Owner' not found."));
-
             CompanyMember companyMember = new CompanyMember();
             companyMember.setCompany(savedCompany);
             companyMember.setPerson(savedPerson);
@@ -102,46 +139,6 @@ public class PersonService {
         }
 
         return modelMapper.map(savedPerson, PersonDTO.class);
-    }
-
-    private Company createCompanyFromCnpj(String cnpj) {
-        CnpjResponseDTO cnpjData = brasilApiService.getCnpjData(cnpj).block();
-        if (cnpjData == null) {
-            throw new BusinessException("Failed to fetch CNPJ data for: " + cnpj);
-        }
-
-        Company company = new Company();
-        company.setDocument(cnpj);
-        company.setRegisteredName(cnpjData.getRazaoSocial());
-        company.setTradeName(cnpjData.getNomeFantasia());
-        company.setRegistrationStatusDescription(cnpjData.getDescricaoSituacaoCadastral());
-        company.setPrimaryPhone(cnpjData.getDddTelefone1());
-
-        if (cnpjData.getCep() != null) {
-            Address address = new Address();
-            address.setStreet(cnpjData.getLogradouro());
-            address.setNumber(cnpjData.getNumero());
-            address.setComplement(cnpjData.getComplemento());
-            address.setNeighborhood(cnpjData.getBairro());
-            address.setZipCode(cnpjData.getCep());
-
-            State state = stateRepository.findByUf(cnpjData.getUf()).orElseGet(() -> {
-                State newState = new State();
-                newState.setUf(cnpjData.getUf());
-                return stateRepository.save(newState);
-            });
-
-            City city = cityRepository.findByNameAndState(cnpjData.getMunicipio(), state).orElseGet(() -> {
-                City newCity = new City();
-                newCity.setName(cnpjData.getMunicipio());
-                newCity.setState(state);
-                return cityRepository.save(newCity);
-            });
-            address.setCity(city);
-            Address savedAddress = addressRepository.save(address);
-            company.setAddress(savedAddress);
-        }
-        return companyRepository.save(company);
     }
 
     public List<PersonDTO> findAll() {

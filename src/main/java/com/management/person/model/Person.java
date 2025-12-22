@@ -17,9 +17,6 @@ public class Person {
     @Column(name = "full_name", nullable = false)
     private String fullName;
 
-    @Column(nullable = false)
-    private String email;
-
     private String phone;
 
     @Column(name = "birth_date")
@@ -64,14 +61,6 @@ public class Person {
 
     public void setFullName(String fullName) {
         this.fullName = fullName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public String getPhone() {

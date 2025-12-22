@@ -2,6 +2,7 @@ package com.management.person.model;
 
 import com.management.documenttype.model.DocumentType;
 import jakarta.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -13,15 +14,18 @@ public class PersonDocument {
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "person_id", nullable = false)
+    @JoinColumn(name = "fk_person", nullable = false)
     private Person person;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "document_type_id", nullable = false)
+    @JoinColumn(name = "fk_document_type", nullable = false)
     private DocumentType documentType;
 
-    @Column(nullable = false)
+    @Column(name = "document_value", nullable = false)
     private String document;
+
+    @Column(name = "issued_at")
+    private LocalDate issuedAt;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -62,6 +66,14 @@ public class PersonDocument {
 
     public void setDocument(String document) {
         this.document = document;
+    }
+
+    public LocalDate getIssuedAt() {
+        return issuedAt;
+    }
+
+    public void setIssuedAt(LocalDate issuedAt) {
+        this.issuedAt = issuedAt;
     }
 
     public LocalDateTime getCreatedAt() {

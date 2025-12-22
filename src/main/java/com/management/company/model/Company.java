@@ -1,6 +1,7 @@
 package com.management.company.model;
 
 import com.management.address.model.Address;
+import com.management.documenttype.model.DocumentType;
 import com.management.plantype.model.PlanType;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
@@ -15,6 +16,10 @@ public class Company {
 
     @Column(unique = true, nullable = false)
     private String document;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_document_type", nullable = false)
+    private DocumentType documentType;
 
     @Column(name = "registered_name", nullable = false)
     private String registeredName;
@@ -72,6 +77,14 @@ public class Company {
 
     public void setDocument(String document) {
         this.document = document;
+    }
+
+    public DocumentType getDocumentType() {
+        return documentType;
+    }
+
+    public void setDocumentType(DocumentType documentType) {
+        this.documentType = documentType;
     }
 
     public String getRegisteredName() {

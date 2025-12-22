@@ -11,6 +11,8 @@ import com.management.documenttype.model.DocumentType;
 import com.management.documenttype.repository.DocumentTypeRepository;
 import com.management.person.dto.PersonCreateDTO;
 import com.management.person.dto.PersonDTO;
+import com.management.plantype.model.PlanType;
+import com.management.plantype.repository.PlanTypeRepository;
 import com.management.person.model.Person;
 import com.management.person.repository.PersonDocumentRepository;
 import com.management.person.repository.PersonRepository;
@@ -58,6 +60,8 @@ class PersonServiceTest {
     @Mock
     private UserAccountRepository userAccountRepository;
     @Mock
+    private PlanTypeRepository planTypeRepository;
+    @Mock
     private RoleRepository roleRepository;
     @Mock
     private PersonRoleRepository personRoleRepository;
@@ -99,6 +103,8 @@ class PersonServiceTest {
         when(modelMapper.map(any(PersonCreateDTO.class), eq(Person.class))).thenReturn(person);
         when(personRepository.save(any(Person.class))).thenReturn(person);
         when(documentTypeRepository.getReferenceById(anyInt())).thenReturn(new DocumentType());
+        when(documentTypeRepository.findByCode("CNPJ")).thenReturn(Optional.of(new DocumentType()));
+        when(planTypeRepository.findByCode("FREE")).thenReturn(Optional.of(new PlanType()));
         when(passwordEncoder.encode(anyString())).thenReturn("hashedPassword");
         when(brasilApiService.getCnpjData(anyString())).thenReturn(Mono.just(cnpjResponse));
         when(roleRepository.findByName("Owner")).thenReturn(Optional.of(ownerRole));

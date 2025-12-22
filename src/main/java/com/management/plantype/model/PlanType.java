@@ -9,7 +9,8 @@ public class PlanType {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String name;
+    @Column(unique = true, nullable = false)
+    private String code;
 
     // Getters and Setters
     public Integer getId() {
@@ -20,11 +21,11 @@ public class PlanType {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getCode() {
+        return code;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setCode(String code) {
+        this.code = code;
     }
 }

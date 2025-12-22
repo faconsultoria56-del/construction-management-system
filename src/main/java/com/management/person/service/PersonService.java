@@ -22,6 +22,8 @@ import com.management.person.model.UserAccount;
 import com.management.person.repository.PersonDocumentRepository;
 import com.management.person.repository.PersonRepository;
 import com.management.person.repository.UserAccountRepository;
+import com.management.plantype.model.PlanType;
+import com.management.plantype.repository.PlanTypeRepository;
 import com.management.project.exception.ResourceNotFoundException;
 import com.management.role.model.PersonRole;
 import com.management.role.model.Role;
@@ -53,12 +55,13 @@ public class PersonService {
     private final DocumentTypeRepository documentTypeRepository;
     private final PersonDocumentRepository personDocumentRepository;
     private final UserAccountRepository userAccountRepository;
+    private final PlanTypeRepository planTypeRepository;
     private final RoleRepository roleRepository;
     private final PersonRoleRepository personRoleRepository;
     private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
 
-    public PersonService(PersonRepository personRepository, CompanyRepository companyRepository, CompanyMemberRepository companyMemberRepository, BrasilApiService brasilApiService, AddressRepository addressRepository, CityRepository cityRepository, StateRepository stateRepository, DocumentTypeRepository documentTypeRepository, PersonDocumentRepository personDocumentRepository, UserAccountRepository userAccountRepository, RoleRepository roleRepository, PersonRoleRepository personRoleRepository, PasswordEncoder passwordEncoder, ModelMapper modelMapper) {
+    public PersonService(PersonRepository personRepository, CompanyRepository companyRepository, CompanyMemberRepository companyMemberRepository, BrasilApiService brasilApiService, AddressRepository addressRepository, CityRepository cityRepository, StateRepository stateRepository, DocumentTypeRepository documentTypeRepository, PersonDocumentRepository personDocumentRepository, UserAccountRepository userAccountRepository, PlanTypeRepository planTypeRepository, RoleRepository roleRepository, PersonRoleRepository personRoleRepository, PasswordEncoder passwordEncoder, ModelMapper modelMapper) {
         this.personRepository = personRepository;
         this.companyRepository = companyRepository;
         this.companyMemberRepository = companyMemberRepository;
@@ -69,6 +72,7 @@ public class PersonService {
         this.documentTypeRepository = documentTypeRepository;
         this.personDocumentRepository = personDocumentRepository;
         this.userAccountRepository = userAccountRepository;
+        this.planTypeRepository = planTypeRepository;
         this.roleRepository = roleRepository;
         this.personRoleRepository = personRoleRepository;
         this.passwordEncoder = passwordEncoder;
@@ -105,8 +109,18 @@ public class PersonService {
                 CnpjResponseDTO cnpjData = brasilApiService.getCnpjData(createDTO.getCnpj()).block();
 
                 if (cnpjData != null) {
+                    // 1. Localizar dependências obrigatórias para a Company
+                    DocumentType cnpjDocType = documentTypeRepository.findByCode("CNPJ")
+                            .orElseThrow(() -> new ResourceNotFoundException("Tipo de documento 'CNPJ' não encontrado no sistema."));
+
+                    PlanType freePlan = planTypeRepository.findByCode("FREE")
+                            .orElseThrow(() -> new ResourceNotFoundException("Plano 'FREE' não encontrado no sistema."));
+
+                    // 2. Configurar e salvar a Company
                     Company company = new Company();
                     company.setDocument(createDTO.getCnpj());
+                    company.setDocumentType(cnpjDocType); // Resolve o erro de Not-Null Constraint
+                    company.setPlanType(freePlan);        // Resolve a obrigatoriedade de plano
                     company.setRegisteredName(cnpjData.getRazaoSocial());
                     company.setTradeName(cnpjData.getNomeFantasia());
                     company.setRegistrationStatusDescription(cnpjData.getDescricaoSituacaoCadastral());

@@ -18,7 +18,7 @@ public class UserAccount {
     private String passwordHash;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "person_id", nullable = false)
+    @JoinColumn(name = "fk_person", nullable = false)
     private Person person;
 
     @Column(name = "created_at", nullable = false, updatable = false)

@@ -6,7 +6,6 @@ import com.management.role.model.PersonRole;
 import com.management.role.repository.PersonRoleRepository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -36,6 +35,6 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .map(personRole -> new SimpleGrantedAuthority("ROLE_" + personRole.getRole().getName().toUpperCase()))
                 .collect(Collectors.toList());
 
-        return new User(userAccount.getEmail(), userAccount.getPasswordHash(), authorities);
+        return new UserPrincipal(userAccount, authorities);
     }
 }

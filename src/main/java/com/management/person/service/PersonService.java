@@ -22,6 +22,7 @@ import com.management.person.model.UserAccount;
 import com.management.person.repository.PersonDocumentRepository;
 import com.management.person.repository.PersonRepository;
 import com.management.person.repository.UserAccountRepository;
+import com.management.plantype.model.PlanType;
 import com.management.project.exception.ResourceNotFoundException;
 import com.management.role.model.PersonRole;
 import com.management.role.model.Role;
@@ -105,8 +106,15 @@ public class PersonService {
                 CnpjResponseDTO cnpjData = brasilApiService.getCnpjData(createDTO.getCnpj()).block();
 
                 if (cnpjData != null) {
+                    DocumentType typeDocument = new DocumentType();
+                    typeDocument.setId(4);
+                    typeDocument.setCode("CNPJ");
+                    PlanType planType = new PlanType();
+                    planType.setId(1);
                     Company company = new Company();
                     company.setDocument(createDTO.getCnpj());
+                    company.setPlanType(planType);
+                    company.setDocumentType(typeDocument);
                     company.setRegisteredName(cnpjData.getRazaoSocial());
                     company.setTradeName(cnpjData.getNomeFantasia());
                     company.setRegistrationStatusDescription(cnpjData.getDescricaoSituacaoCadastral());

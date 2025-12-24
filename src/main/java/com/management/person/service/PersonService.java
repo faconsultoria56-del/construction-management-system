@@ -8,18 +8,30 @@ import com.management.city.repository.CityRepository;
 import com.management.city.repository.StateRepository;
 import com.management.company.dto.CnpjResponseDTO;
 import com.management.company.model.Company;
-import com.management.company.model.CompanyPartner;
-import com.management.company.repository.CompanyPartnerRepository;
+import com.management.company.model.CompanyMember;
+import com.management.company.repository.CompanyMemberRepository;
 import com.management.company.repository.CompanyRepository;
 import com.management.company.service.BrasilApiService;
+import com.management.documenttype.model.DocumentType;
+import com.management.documenttype.repository.DocumentTypeRepository;
 import com.management.person.dto.PersonCreateDTO;
-import com.management.company.repository.CompanyPartnerRepository;
 import com.management.person.dto.PersonDTO;
 import com.management.person.model.Person;
+import com.management.person.model.PersonDocument;
+import com.management.person.model.UserAccount;
+import com.management.person.repository.PersonDocumentRepository;
 import com.management.person.repository.PersonRepository;
-import com.management.project.exception.BusinessException;
+import com.management.person.repository.UserAccountRepository;
+import com.management.plantype.model.PlanType;
 import com.management.project.exception.ResourceNotFoundException;
+import com.management.role.model.PersonRole;
+import com.management.role.model.Role;
+import com.management.role.repository.PersonRoleRepository;
+import com.management.role.repository.RoleRepository;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,75 +41,131 @@ import java.util.stream.Collectors;
 @Service
 public class PersonService {
 
+    private static final Logger log = LoggerFactory.getLogger(PersonService.class);
+
+
     private final PersonRepository personRepository;
     private final CompanyRepository companyRepository;
-    private final CompanyPartnerRepository companyPartnerRepository;
+    private final CompanyMemberRepository companyMemberRepository;
     private final BrasilApiService brasilApiService;
     private final AddressRepository addressRepository;
     private final CityRepository cityRepository;
     private final StateRepository stateRepository;
+    private final DocumentTypeRepository documentTypeRepository;
+    private final PersonDocumentRepository personDocumentRepository;
+    private final UserAccountRepository userAccountRepository;
+    private final RoleRepository roleRepository;
+    private final PersonRoleRepository personRoleRepository;
+    private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
 
-    public PersonService(PersonRepository personRepository, CompanyRepository companyRepository, CompanyPartnerRepository companyPartnerRepository, BrasilApiService brasilApiService, AddressRepository addressRepository, CityRepository cityRepository, StateRepository stateRepository, ModelMapper modelMapper) {
+    public PersonService(PersonRepository personRepository, CompanyRepository companyRepository, CompanyMemberRepository companyMemberRepository, BrasilApiService brasilApiService, AddressRepository addressRepository, CityRepository cityRepository, StateRepository stateRepository, DocumentTypeRepository documentTypeRepository, PersonDocumentRepository personDocumentRepository, UserAccountRepository userAccountRepository, RoleRepository roleRepository, PersonRoleRepository personRoleRepository, PasswordEncoder passwordEncoder, ModelMapper modelMapper) {
         this.personRepository = personRepository;
         this.companyRepository = companyRepository;
-        this.companyPartnerRepository = companyPartnerRepository;
+        this.companyMemberRepository = companyMemberRepository;
         this.brasilApiService = brasilApiService;
         this.addressRepository = addressRepository;
         this.cityRepository = cityRepository;
         this.stateRepository = stateRepository;
+        this.documentTypeRepository = documentTypeRepository;
+        this.personDocumentRepository = personDocumentRepository;
+        this.userAccountRepository = userAccountRepository;
+        this.roleRepository = roleRepository;
+        this.personRoleRepository = personRoleRepository;
+        this.passwordEncoder = passwordEncoder;
         this.modelMapper = modelMapper;
     }
 
     @Transactional
     public PersonDTO createPerson(PersonCreateDTO createDTO) {
+        // 1. Save Person
         Person person = modelMapper.map(createDTO, Person.class);
         Person savedPerson = personRepository.save(person);
 
+        // 2. Save PersonDocument
+        DocumentType documentType = documentTypeRepository.getReferenceById(createDTO.getDocumentType());
+        PersonDocument personDocument = new PersonDocument();
+        personDocument.setPerson(savedPerson);
+        personDocument.setDocumentType(documentType);
+        personDocument.setDocument(createDTO.getDocument());
+        personDocumentRepository.save(personDocument);
+
+        // 3. Create UserAccount
+        UserAccount userAccount = new UserAccount();
+        userAccount.setEmail(createDTO.getEmail());
+        userAccount.setPasswordHash(passwordEncoder.encode(createDTO.getPassword()));
+        userAccount.setPerson(savedPerson);
+        userAccountRepository.save(userAccount);
+
+        Role ownerRole = roleRepository.findByName("Owner")
+                .orElseThrow(() -> new IllegalStateException("Owner role not found"));
+
+        // 4. Resiliently handle Company creation
         if (createDTO.getCnpj() != null && !createDTO.getCnpj().isEmpty()) {
-            CnpjResponseDTO cnpjData = brasilApiService.getCnpjData(createDTO.getCnpj()).block();
+            try {
+                CnpjResponseDTO cnpjData = brasilApiService.getCnpjData(createDTO.getCnpj()).block();
 
-            if (cnpjData != null) {
-                Company company = new Company();
-                company.setDocument(createDTO.getCnpj());
-                company.setRegisteredName(cnpjData.getRazaoSocial());
-                company.setTradeName(cnpjData.getNomeFantasia());
-                company.setRegistrationStatusDescription(cnpjData.getDescricaoSituacaoCadastral());
-                company.setPrimaryPhone(cnpjData.getDddTelefone1());
+                if (cnpjData != null) {
+                    DocumentType typeDocument = new DocumentType();
+                    typeDocument.setId(4);
+                    typeDocument.setCode("CNPJ");
+                    PlanType planType = new PlanType();
+                    planType.setId(1);
+                    Company company = new Company();
+                    company.setDocument(createDTO.getCnpj());
+                    company.setPlanType(planType);
+                    company.setDocumentType(typeDocument);
+                    company.setRegisteredName(cnpjData.getRazaoSocial());
+                    company.setTradeName(cnpjData.getNomeFantasia());
+                    company.setRegistrationStatusDescription(cnpjData.getDescricaoSituacaoCadastral());
+                    company.setPrimaryPhone(cnpjData.getDddTelefone1());
 
-                if (cnpjData.getCep() != null) {
-                    Address address = new Address();
-                    address.setStreet(cnpjData.getLogradouro());
-                    address.setNumber(cnpjData.getNumero());
-                    address.setComplement(cnpjData.getComplemento());
-                    address.setNeighborhood(cnpjData.getBairro());
-                    address.setZipCode(cnpjData.getCep());
+                    if (cnpjData.getCep() != null) {
+                        Address address = new Address();
+                        address.setStreet(cnpjData.getLogradouro());
+                        address.setNumber(cnpjData.getNumero());
+                        address.setComplement(cnpjData.getComplemento());
+                        address.setNeighborhood(cnpjData.getBairro());
+                        address.setZipCode(cnpjData.getCep());
 
-                    State state = stateRepository.findByUf(cnpjData.getUf()).orElseGet(() -> {
-                        State newState = new State();
-                        newState.setUf(cnpjData.getUf());
-                        return stateRepository.save(newState);
-                    });
+                        State state = stateRepository.findByUf(cnpjData.getUf()).orElseGet(() -> {
+                            State newState = new State();
+                            newState.setUf(cnpjData.getUf());
+                            return stateRepository.save(newState);
+                        });
 
-                    City city = cityRepository.findByNameAndState(cnpjData.getMunicipio(), state).orElseGet(() -> {
-                        City newCity = new City();
-                        newCity.setName(cnpjData.getMunicipio());
-                        newCity.setState(state);
-                        return cityRepository.save(newCity);
-                    });
-                    address.setCity(city);
-                    Address savedAddress = addressRepository.save(address);
-                    company.setAddress(savedAddress);
+                        City city = cityRepository.findByNameAndState(cnpjData.getMunicipio(), state).orElseGet(() -> {
+                            City newCity = new City();
+                            newCity.setName(cnpjData.getMunicipio());
+                            newCity.setState(state);
+                            return cityRepository.save(newCity);
+                        });
+                        address.setCity(city);
+                        Address savedAddress = addressRepository.save(address);
+                        company.setAddress(savedAddress);
+                    }
+
+                    Company savedCompany = companyRepository.save(company);
+
+                    CompanyMember member = new CompanyMember();
+                    member.setPerson(savedPerson);
+                    member.setCompany(savedCompany);
+                    member.setRole(ownerRole);
+                    companyMemberRepository.save(member);
                 }
-
-                Company savedCompany = companyRepository.save(company);
-
-                CompanyPartner partner = new CompanyPartner();
-                partner.setPerson(savedPerson);
-                partner.setCompany(savedCompany);
-                companyPartnerRepository.save(partner);
+            } catch (Exception e) {
+                log.error("Failed to retrieve or process CNPJ data for {}: {}", createDTO.getCnpj(), e.getMessage());
+                // Do not rethrow, allowing person creation to succeed
             }
         }
+
+        // 5. Assign 'Owner' role
+        PersonRole personRole = new PersonRole();
+        personRole.setPerson(savedPerson);
+        personRole.setRole(ownerRole);
+        personRoleRepository.save(personRole);
+
+
         return modelMapper.map(savedPerson, PersonDTO.class);
     }
 
@@ -115,9 +183,9 @@ public class PersonService {
     }
 
     public List<PersonDTO> findPersonsByCompanyId(Integer companyId) {
-        return companyPartnerRepository.findByCompanyId(companyId)
+        return companyMemberRepository.findByCompanyId(companyId)
                 .stream()
-                .map(companyPartner -> modelMapper.map(companyPartner.getPerson(), PersonDTO.class))
+                .map(companyMember -> modelMapper.map(companyMember.getPerson(), PersonDTO.class))
                 .collect(Collectors.toList());
     }
 }

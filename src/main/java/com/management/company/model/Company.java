@@ -1,14 +1,18 @@
 package com.management.company.model;
 
 import com.management.address.model.Address;
+import com.management.documenttype.model.DocumentType;
 import com.management.plantype.model.PlanType;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
 @Table(name = "company", schema = "management")
 public class Company {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -32,9 +36,15 @@ public class Company {
     @JoinColumn(name = "fk_address")
     private Address address;
 
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_plan_type", nullable = false)
     private PlanType planType;
+
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_document_type", nullable = false)
+    private DocumentType documentType;
 
     @OneToMany(mappedBy = "company")
     private List<CompanyMember> companyMembers;
@@ -56,7 +66,9 @@ public class Company {
         updatedAt = LocalDateTime.now();
     }
 
-    // Getters and Setters
+    /* =======================
+       Getters and Setters
+       ======================= */
 
     public Integer getId() {
         return id;
@@ -114,14 +126,6 @@ public class Company {
         this.address = address;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
     public PlanType getPlanType() {
         return planType;
     }
@@ -130,12 +134,12 @@ public class Company {
         this.planType = planType;
     }
 
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
+    public DocumentType getDocumentType() {
+        return documentType;
     }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
+    public void setDocumentType(DocumentType documentType) {
+        this.documentType = documentType;
     }
 
     public List<CompanyMember> getCompanyMembers() {

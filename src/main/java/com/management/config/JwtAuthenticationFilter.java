@@ -34,18 +34,38 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             String jwt = getJwtFromRequest(request);
 
-            if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
-                String userEmail = tokenProvider.getEmailFromJWT(jwt);
+            // LOG 1: Verificar se o token foi extraído do Header
+            System.out.println("--- INÍCIO DA VALIDAÇÃO DO TOKEN ---");
+            System.out.println("Token extraído: " + (jwt != null ? jwt : "NULO - Header Authorization não encontrado ou sem 'Bearer '"));
 
-                UserDetails userDetails = customUserDetailsService.loadUserByUsername(userEmail);
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            if (StringUtils.hasText(jwt)) {
+                boolean isValid = tokenProvider.validateToken(jwt);
 
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                // LOG 2: Verificar se a assinatura/validade do token passou
+                System.out.println("Token é válido pela assinatura? " + isValid);
+
+                if (isValid) {
+                    String userEmail = tokenProvider.getEmailFromJWT(jwt);
+                    System.out.println("E-mail extraído do Token: " + userEmail);
+                    UserDetails userDetails = customUserDetailsService.loadUserByUsername(userEmail);
+                    System.out.println("Usuário carregado do banco: " + userDetails.getUsername());
+                    System.out.println("Roles/Permissões: " + userDetails.getAuthorities());
+
+                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities());
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                    System.out.println("SUCESSO: Autenticação definida no contexto de segurança.");
+                } else {
+                    System.out.println("ERRO: O token foi enviado, mas a validação (assinatura ou expiração) falhou.");
+                }
             }
+            System.out.println("--- FIM DA VALIDAÇÃO ---");
+
         } catch (Exception ex) {
-            logger.error("Could not set user authentication in security context", ex);
+            logger.error("Falha ao configurar a autenticação", ex);
+            System.out.println("EXCEÇÃO: " + ex.getMessage());
         }
 
         filterChain.doFilter(request, response);

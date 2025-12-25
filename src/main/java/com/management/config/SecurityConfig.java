@@ -30,7 +30,8 @@ public class SecurityConfig {
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/persons").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/persons/**").permitAll()
+//                        .requestMatchers(HttpMethod.GET, "/api/projects/**").permitAll()
                         .anyRequest().authenticated()
                 );
 
@@ -38,6 +39,18 @@ public class SecurityConfig {
 
         return http.build();
     }
+
+//    @Bean
+//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+//        return http
+//                .csrf(csrf -> csrf.disable()) // ESSENCIAL PARA APIs
+//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//                .authorizeHttpRequests(auth -> auth
+//                        .requestMatchers("/api/auth/**", "/api/persons/**").permitAll() // LIBERA AS PORTAS DE ENTRADA
+//                        .anyRequest().authenticated()
+//                )
+//                .build();
+//    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {

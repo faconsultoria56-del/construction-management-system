@@ -3,15 +3,13 @@ package com.management.person.model;
 import com.management.documenttype.model.DocumentType;
 import jakarta.persistence.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "person_document", schema = "management")
 public class PersonDocument {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_person", nullable = false)
@@ -21,26 +19,16 @@ public class PersonDocument {
     @JoinColumn(name = "fk_document_type", nullable = false)
     private DocumentType documentType;
 
-    @Column(name = "document_value", nullable = false)
-    private String document;
+    @Column(name = "document", nullable = false, length = 50)
+    private String document; // Aqui fica o CPF
 
-    @Column(name = "issued_at")
     private LocalDate issuedAt;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-    }
-
-    // Getters and Setters
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -74,13 +62,5 @@ public class PersonDocument {
 
     public void setIssuedAt(LocalDate issuedAt) {
         this.issuedAt = issuedAt;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
     }
 }

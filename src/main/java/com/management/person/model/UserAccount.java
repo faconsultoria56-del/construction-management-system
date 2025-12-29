@@ -1,5 +1,6 @@
 package com.management.person.model;
 
+import com.management.company.model.Company;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -9,17 +10,32 @@ public class UserAccount {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
-    @Column(nullable = false, unique = true)
-    private String email;
-
-    @Column(name = "password_hash", nullable = false)
-    private String passwordHash;
+    private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_person", nullable = false)
     private Person person;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_company", nullable = false)
+    private Company company;
+
+    private String email; // Para Owners
+
+    @Column(name = "access_code")
+    private String accessCode; // Para Employees (CPF)
+
+    @Column(name = "password_hash", nullable = false)
+    private String passwordHash;
+
+    @Column(length = 20)
+    private String status = "pending";
+
+    @Column(name = "email_verified")
+    private boolean emailVerified = false;
+
+    @Column(name = "verification_token")
+    private String verificationToken;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -39,12 +55,28 @@ public class UserAccount {
     }
 
     // Getters and Setters
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
+    }
+
+    public Person getPerson() {
+        return person;
+    }
+
+    public void setPerson(Person person) {
+        this.person = person;
+    }
+
+    public Company getCompany() {
+        return company;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
     }
 
     public String getEmail() {
@@ -55,6 +87,14 @@ public class UserAccount {
         this.email = email;
     }
 
+    public String getAccessCode() {
+        return accessCode;
+    }
+
+    public void setAccessCode(String accessCode) {
+        this.accessCode = accessCode;
+    }
+
     public String getPasswordHash() {
         return passwordHash;
     }
@@ -63,12 +103,28 @@ public class UserAccount {
         this.passwordHash = passwordHash;
     }
 
-    public Person getPerson() {
-        return person;
+    public String getStatus() {
+        return status;
     }
 
-    public void setPerson(Person person) {
-        this.person = person;
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public boolean isEmailVerified() {
+        return emailVerified;
+    }
+
+    public void setEmailVerified(boolean emailVerified) {
+        this.emailVerified = emailVerified;
+    }
+
+    public String getVerificationToken() {
+        return verificationToken;
+    }
+
+    public void setVerificationToken(String verificationToken) {
+        this.verificationToken = verificationToken;
     }
 
     public LocalDateTime getCreatedAt() {

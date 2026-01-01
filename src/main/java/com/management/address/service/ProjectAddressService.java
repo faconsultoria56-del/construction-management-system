@@ -4,7 +4,6 @@ import com.management.address.dto.ProjectAddressRequestDTO;
 import com.management.address.dto.ProjectAddressResponseDTO;
 import com.management.address.model.Address;
 import com.management.address.repository.AddressRepository;
-import com.management.city.repository.CityRepository;
 import com.management.exception.ResourceNotFoundException;
 import com.management.project.model.Project;
 import com.management.project.repository.ProjectRepository;
@@ -22,9 +21,6 @@ public class ProjectAddressService {
     private AddressRepository addressRepository;
 
     @Autowired
-    private CityRepository cityRepository;
-
-    @Autowired
     private ModelMapper modelMapper;
 
     public ProjectAddressResponseDTO createProjectAddress(Integer projectId, ProjectAddressRequestDTO requestDTO) {
@@ -32,13 +28,21 @@ public class ProjectAddressService {
                 .orElseThrow(() -> new ResourceNotFoundException("Project not found with id: " + projectId));
 
         Address address = modelMapper.map(requestDTO, Address.class);
-        address.setCity(cityRepository.findById(requestDTO.getCityId())
-                .orElseThrow(() -> new ResourceNotFoundException("City not found with id: " + requestDTO.getCityId())));
 
-        project.setAddress(address);
+        // As the relationship is now managed by Project, we should set the address on the project
+        // and let JPA handle the foreign key.
+        // However, the previous logic was setting the address on the project directly,
+        // but there is no address field in the Project entity. I will assume a bi-directional
+        // relationship needs to be established or that a project can have one address.
+        // Based on the previous code, the project has a foreign key to address.
+        // The relationship seems to be Project -> Address.
+        // Therefore, we save the address first.
+        Address savedAddress = addressRepository.save(address);
+
+        project.setAddress(savedAddress);
         projectRepository.save(project);
 
-        return modelMapper.map(address, ProjectAddressResponseDTO.class);
+        return modelMapper.map(savedAddress, ProjectAddressResponseDTO.class);
     }
 
     public ProjectAddressResponseDTO getProjectAddress(Integer projectId) {
@@ -62,9 +66,6 @@ public class ProjectAddressService {
         }
 
         modelMapper.map(requestDTO, address);
-        address.setCity(cityRepository.findById(requestDTO.getCityId())
-                .orElseThrow(() -> new ResourceNotFoundException("City not found with id: " + requestDTO.getCityId())));
-
         addressRepository.save(address);
 
         return modelMapper.map(address, ProjectAddressResponseDTO.class);
@@ -75,8 +76,10 @@ public class ProjectAddressService {
                 .orElseThrow(() -> new ResourceNotFoundException("Project not found with id: " + projectId));
 
         if (project.getAddress() != null) {
+            Address addressToDelete = project.getAddress();
             project.setAddress(null);
             projectRepository.save(project);
+            addressRepository.delete(addressToDelete);
         }
     }
 }

@@ -7,7 +7,9 @@ import java.time.LocalDate;
 public class PersonCreateDTO {
     private String fullName;
     private String document;
+    private String documentType; // CPF, RG, etc.
     private String email;
+    private String password;
     private LocalDate birthDate;
     private String cnpj;
 }

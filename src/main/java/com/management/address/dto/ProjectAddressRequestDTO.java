@@ -1,6 +1,7 @@
 package com.management.address.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
@@ -20,12 +21,6 @@ public class ProjectAddressRequestDTO {
 
     private String complement;
 
-    @NotBlank(message = "City name is mandatory")
-    private String cityName;
-
-    @NotBlank(message = "State name is mandatory")
-    private String stateName;
-
-    @NotBlank(message = "Country name is mandatory")
-    private String countryName;
+    @NotNull(message = "City ID is mandatory")
+    private Integer cityId;
 }

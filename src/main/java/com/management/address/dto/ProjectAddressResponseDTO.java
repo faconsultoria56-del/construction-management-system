@@ -1,5 +1,6 @@
 package com.management.address.dto;
 
+import com.management.city.dto.CityResponseDTO;
 import lombok.Data;
 
 @Data
@@ -10,7 +11,5 @@ public class ProjectAddressResponseDTO {
     private String neighborhood;
     private String zipCode;
     private String complement;
-    private String cityName;
-    private String stateName;
-    private String countryName;
+    private CityResponseDTO city;
 }

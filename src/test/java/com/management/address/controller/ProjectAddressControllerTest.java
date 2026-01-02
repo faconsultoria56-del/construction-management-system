@@ -10,9 +10,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -46,9 +52,7 @@ public class ProjectAddressControllerTest {
         requestDTO.setNumber("123");
         requestDTO.setNeighborhood("Test Neighborhood");
         requestDTO.setZipCode("12345-678");
-        requestDTO.setCityName("Test City");
-        requestDTO.setStateName("Test State");
-        requestDTO.setCountryName("Test Country");
+        requestDTO.setCityId(1);
 
         responseDTO = new ProjectAddressResponseDTO();
         responseDTO.setStreet("Test Street");

@@ -1,5 +1,6 @@
 package com.management.address.model;
 
+import com.management.city.model.City;
 import com.management.company.model.Company;
 import com.management.person.model.Person;
 import jakarta.persistence.*;
@@ -22,19 +23,14 @@ public class Address {
     @Column(nullable = false)
     private String neighborhood;
 
-    @Column(name = "zip_code", nullable = false)
+    @Column(nullable = false)
     private String zipCode;
 
     private String complement;
 
-    @Column(name = "city_name")
-    private String cityName;
-
-    @Column(name = "state_name")
-    private String stateName;
-
-    @Column(name = "country_name")
-    private String countryName;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_city", nullable = false)
+    private City city;
 
     @OneToMany(mappedBy = "address")
     private List<Company> companies;
@@ -108,28 +104,12 @@ public class Address {
         this.complement = complement;
     }
 
-    public String getCityName() {
-        return cityName;
+    public City getCity() {
+        return city;
     }
 
-    public void setCityName(String cityName) {
-        this.cityName = cityName;
-    }
-
-    public String getStateName() {
-        return stateName;
-    }
-
-    public void setStateName(String stateName) {
-        this.stateName = stateName;
-    }
-
-    public String getCountryName() {
-        return countryName;
-    }
-
-    public void setCountryName(String countryName) {
-        this.countryName = countryName;
+    public void setCity(City city) {
+        this.city = city;
     }
 
     public List<Company> getCompanies() {

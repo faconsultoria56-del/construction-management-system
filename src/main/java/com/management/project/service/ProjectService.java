@@ -103,14 +103,14 @@ public class ProjectService {
     }
 
     @Transactional(readOnly = true)
-    public ProjectResponse findById(Integer id) {
+    public ProjectResponse findById(Long id) {
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Project not found with id: " + id));
         return projectMapper.toResponse(project);
     }
 
     @Transactional(readOnly = true)
-    public List<ProjectResponse> findByCompanyId(Integer companyId) {
+    public List<ProjectResponse> findByCompanyId(Long companyId) {
         if (!companyRepository.existsById(companyId)) {
             throw new ResourceNotFoundException("Company not found with id: " + companyId);
         }
@@ -118,7 +118,7 @@ public class ProjectService {
     }
 
     @Transactional(readOnly = true)
-    public List<ProjectResponse> findByPersonId(Integer personId) {
+    public List<ProjectResponse> findByPersonId(Long personId) {
         if (!personRepository.existsById(personId)) {
             throw new ResourceNotFoundException("Person not found with id: " + personId);
         }

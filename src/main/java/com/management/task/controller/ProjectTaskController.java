@@ -30,28 +30,28 @@ public class ProjectTaskController {
 
     @GetMapping("/tasks/{id}")
     @Operation(summary = "Finds a task by ID")
-    public ResponseEntity<ProjectTaskResponse> getTaskById(@PathVariable Integer id) {
+    public ResponseEntity<ProjectTaskResponse> getTaskById(@PathVariable Long id) {
         ProjectTaskResponse task = taskService.findTaskById(id);
         return ResponseEntity.ok(task);
     }
 
     @GetMapping("/projects/{projectId}/tasks")
     @Operation(summary = "Finds all tasks for a project")
-    public ResponseEntity<List<ProjectTaskResponse>> getTasksByProject(@PathVariable Integer projectId) {
+    public ResponseEntity<List<ProjectTaskResponse>> getTasksByProject(@PathVariable Long projectId) {
         List<ProjectTaskResponse> tasks = taskService.listByProject(projectId);
         return ResponseEntity.ok(tasks);
     }
 
     @PutMapping("/tasks/{id}")
     @Operation(summary = "Updates a task")
-    public ResponseEntity<ProjectTaskResponse> updateTask(@PathVariable Integer id, @Valid @RequestBody ProjectTaskUpdateRequest request) {
+    public ResponseEntity<ProjectTaskResponse> updateTask(@PathVariable Long id, @Valid @RequestBody ProjectTaskUpdateRequest request) {
         ProjectTaskResponse updatedTask = taskService.updateTask(id, request);
         return ResponseEntity.ok(updatedTask);
     }
 
     @DeleteMapping("/tasks/{id}")
     @Operation(summary = "Deletes a task")
-    public ResponseEntity<Void> deleteTask(@PathVariable Integer id) {
+    public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
         taskService.deleteTask(id);
         return ResponseEntity.noContent().build();
     }

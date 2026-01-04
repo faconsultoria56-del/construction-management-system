@@ -42,7 +42,7 @@ public class PersonController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Finds a person by ID")
-    public ResponseEntity<PersonDTO> findById(@PathVariable Integer id) {
+    public ResponseEntity<PersonDTO> findById(@PathVariable Long id) {
         return ResponseEntity.ok(personService.findById(id));
     }
 }

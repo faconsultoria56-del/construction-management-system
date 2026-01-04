@@ -23,28 +23,28 @@ public class ProjectAddressController {
 
     @PostMapping
     @Operation(summary = "Creates a new address for a project")
-    public ResponseEntity<ProjectAddressResponseDTO> createProjectAddress(@PathVariable Integer projectId, @Valid @RequestBody ProjectAddressRequestDTO requestDTO) {
+    public ResponseEntity<ProjectAddressResponseDTO> createProjectAddress(@PathVariable Long projectId, @Valid @RequestBody ProjectAddressRequestDTO requestDTO) {
         ProjectAddressResponseDTO responseDTO = projectAddressService.createProjectAddress(projectId, requestDTO);
         return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
     }
 
     @GetMapping
     @Operation(summary = "Finds the address for a project")
-    public ResponseEntity<ProjectAddressResponseDTO> getProjectAddress(@PathVariable Integer projectId) {
+    public ResponseEntity<ProjectAddressResponseDTO> getProjectAddress(@PathVariable Long projectId) {
         ProjectAddressResponseDTO responseDTO = projectAddressService.getProjectAddress(projectId);
         return ResponseEntity.ok(responseDTO);
     }
 
     @PutMapping
     @Operation(summary = "Updates the address for a project")
-    public ResponseEntity<ProjectAddressResponseDTO> updateProjectAddress(@PathVariable Integer projectId, @Valid @RequestBody ProjectAddressRequestDTO requestDTO) {
+    public ResponseEntity<ProjectAddressResponseDTO> updateProjectAddress(@PathVariable Long projectId, @Valid @RequestBody ProjectAddressRequestDTO requestDTO) {
         ProjectAddressResponseDTO responseDTO = projectAddressService.updateProjectAddress(projectId, requestDTO);
         return ResponseEntity.ok(responseDTO);
     }
 
     @DeleteMapping
     @Operation(summary = "Deletes the address for a project")
-    public ResponseEntity<Void> deleteProjectAddress(@PathVariable Integer projectId) {
+    public ResponseEntity<Void> deleteProjectAddress(@PathVariable Long projectId) {
         projectAddressService.deleteProjectAddress(projectId);
         return ResponseEntity.noContent().build();
     }

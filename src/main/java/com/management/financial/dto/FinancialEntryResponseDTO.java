@@ -7,18 +7,18 @@ import java.time.LocalDateTime;
 
 @Data
 public class FinancialEntryResponseDTO {
-    private Integer id;
+    private Long id;
     private String type;
     private String description;
     private BigDecimal amount;
     private LocalDate entryDate;
     private Boolean isPaid;
     private LocalDate dueDate;
-    private Integer projectId;
+    private Long projectId;
     private String projectName;
-    private Integer costCenterId;
+    private Long costCenterId;
     private String costCenterName;
-    private Integer personId;
+    private Long personId;
     private String personName;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

@@ -53,13 +53,13 @@ public class FinancialEntryService {
     }
 
     @Transactional(readOnly = true)
-    public FinancialEntryResponseDTO getFinancialEntryById(Integer id) {
+    public FinancialEntryResponseDTO getFinancialEntryById(Long id) {
         FinancialEntry financialEntry = findFinancialEntryById(id);
         return convertToResponseDTO(financialEntry);
     }
 
     @Transactional
-    public FinancialEntryResponseDTO updateFinancialEntry(Integer id, FinancialEntryRequestDTO requestDTO) {
+    public FinancialEntryResponseDTO updateFinancialEntry(Long id, FinancialEntryRequestDTO requestDTO) {
         FinancialEntry existingEntry = findFinancialEntryById(id);
         modelMapper.map(requestDTO, existingEntry);
         setRelatedEntities(existingEntry, requestDTO);
@@ -68,14 +68,14 @@ public class FinancialEntryService {
     }
 
     @Transactional
-    public void deleteFinancialEntry(Integer id) {
+    public void deleteFinancialEntry(Long id) {
         if (!financialEntryRepository.existsById(id)) {
             throw new ResourceNotFoundException("Financial Entry not found with id: " + id);
         }
         financialEntryRepository.deleteById(id);
     }
 
-    private FinancialEntry findFinancialEntryById(Integer id) {
+    private FinancialEntry findFinancialEntryById(Long id) {
         return financialEntryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Financial Entry not found with id: " + id));
     }

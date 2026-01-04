@@ -26,17 +26,17 @@ public class CostCenterController {
     }
 
     @GetMapping("/{id}")
-    public CostCenterDTO getCostCenterById(@PathVariable Integer id) {
+    public CostCenterDTO getCostCenterById(@PathVariable Long id) {
         return costCenterService.getCostCenterById(id);
     }
 
     @PutMapping("/{id}")
-    public CostCenterDTO updateCostCenter(@PathVariable Integer id, @RequestBody CostCenterDTO costCenterDTO) {
+    public CostCenterDTO updateCostCenter(@PathVariable Long id, @RequestBody CostCenterDTO costCenterDTO) {
         return costCenterService.updateCostCenter(id, costCenterDTO);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCostCenter(@PathVariable Integer id) {
+    public ResponseEntity<Void> deleteCostCenter(@PathVariable Long id) {
         costCenterService.deleteCostCenter(id);
         return ResponseEntity.noContent().build();
     }

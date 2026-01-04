@@ -6,14 +6,14 @@ import java.time.LocalDateTime;
 
 @Data
 public class ProjectResponse {
-    private Integer id;
+    private Long id;
     private String name;
     private String description;
     private LocalDate startDate;
     private LocalDate endDate;
-    private Integer companyId;
-    private Integer ownerPersonId;
-    private Integer addressId;
+    private Long companyId;
+    private Long ownerPersonId;
+    private Long addressId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

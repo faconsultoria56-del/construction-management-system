@@ -1,5 +1,6 @@
 package com.management.person.model;
 
+import com.management.company.model.Company;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -11,18 +12,27 @@ public class UserAccount {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false, unique = true)
-    private String email;
-
-    @Column(name = "password_hash", nullable = false)
-    private String passwordHash;
-
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_person", nullable = false)
     private Person person;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_company", nullable = false)
+    private Company company;
+
+    private String email; // Para Owners
+
     @Column(name = "access_code")
-    private String accessCode;
+    private String accessCode; // Para Employees (CPF)
+
+    @Column(name = "password_hash", nullable = false)
+    private String passwordHash;
+
+    @Column(length = 20)
+    private String status = "pending";
+
+    @Column(name = "email_verified")
+    private boolean emailVerified = false;
 
     @Column(name = "verification_token")
     private String verificationToken;
@@ -53,12 +63,36 @@ public class UserAccount {
         this.id = id;
     }
 
+    public Person getPerson() {
+        return person;
+    }
+
+    public void setPerson(Person person) {
+        this.person = person;
+    }
+
+    public Company getCompany() {
+        return company;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
+    }
+
     public String getEmail() {
         return email;
     }
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getAccessCode() {
+        return accessCode;
+    }
+
+    public void setAccessCode(String accessCode) {
+        this.accessCode = accessCode;
     }
 
     public String getPasswordHash() {
@@ -69,20 +103,20 @@ public class UserAccount {
         this.passwordHash = passwordHash;
     }
 
-    public Person getPerson() {
-        return person;
+    public String getStatus() {
+        return status;
     }
 
-    public void setPerson(Person person) {
-        this.person = person;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
-    public String getAccessCode() {
-        return accessCode;
+    public boolean isEmailVerified() {
+        return emailVerified;
     }
 
-    public void setAccessCode(String accessCode) {
-        this.accessCode = accessCode;
+    public void setEmailVerified(boolean emailVerified) {
+        this.emailVerified = emailVerified;
     }
 
     public String getVerificationToken() {

@@ -26,7 +26,7 @@ public class CompanyController {
 
     @GetMapping("/{companyId}/persons")
     @Operation(summary = "Finds all persons for a company")
-    public ResponseEntity<List<PersonDTO>> findPersonsByCompanyId(@PathVariable Integer companyId) {
+    public ResponseEntity<List<PersonDTO>> findPersonsByCompanyId(@PathVariable Long companyId) {
         return ResponseEntity.ok(personService.findPersonsByCompanyId(companyId));
     }
 }

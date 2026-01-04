@@ -30,19 +30,19 @@ public class FinancialEntryController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<FinancialEntryResponseDTO> getFinancialEntryById(@PathVariable Integer id) {
+    public ResponseEntity<FinancialEntryResponseDTO> getFinancialEntryById(@PathVariable Long id) {
         FinancialEntryResponseDTO responseDTO = financialEntryService.getFinancialEntryById(id);
         return new ResponseEntity<>(responseDTO, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<FinancialEntryResponseDTO> updateFinancialEntry(@PathVariable Integer id, @RequestBody FinancialEntryRequestDTO requestDTO) {
+    public ResponseEntity<FinancialEntryResponseDTO> updateFinancialEntry(@PathVariable Long id, @RequestBody FinancialEntryRequestDTO requestDTO) {
         FinancialEntryResponseDTO responseDTO = financialEntryService.updateFinancialEntry(id, requestDTO);
         return new ResponseEntity<>(responseDTO, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteFinancialEntry(@PathVariable Integer id) {
+    public ResponseEntity<Void> deleteFinancialEntry(@PathVariable Long id) {
         financialEntryService.deleteFinancialEntry(id);
         return ResponseEntity.noContent().build();
     }

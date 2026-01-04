@@ -43,24 +43,24 @@ public class ProjectController {
 
     @GetMapping("/projects/{id}")
     @Operation(summary = "Finds a project by ID")
-    public ResponseEntity<ProjectResponse> findById(@PathVariable Integer id) {
+    public ResponseEntity<ProjectResponse> findById(@PathVariable Long id) {
         return ResponseEntity.ok(projectService.findById(id));
     }
 
     @GetMapping("/companies/{companyId}/projects")
-    public ResponseEntity<List<ProjectResponse>> findByCompanyId(@PathVariable Integer companyId) {
+    public ResponseEntity<List<ProjectResponse>> findByCompanyId(@PathVariable Long companyId) {
         return ResponseEntity.ok(projectService.findByCompanyId(companyId));
     }
 
     @GetMapping("/persons/{personId}/projects")
-    public ResponseEntity<List<ProjectResponse>> findByPersonId(@PathVariable Integer personId) {
+    public ResponseEntity<List<ProjectResponse>> findByPersonId(@PathVariable Long personId) {
         return ResponseEntity.ok(projectService.findByPersonId(personId));
     }
 
     @GetMapping("/projects/{projectId}/financial-summary")
     @Operation(summary = "Gets the financial summary for a project")
     @PreAuthorize("hasAnyRole('Owner', 'Manager')")
-    public ResponseEntity<ProjectFinancialSummaryDTO> getFinancialSummary(@PathVariable Integer projectId) {
+    public ResponseEntity<ProjectFinancialSummaryDTO> getFinancialSummary(@PathVariable Long projectId) {
         return ResponseEntity.ok(projectFinancialService.getProjectFinancialSummary(projectId));
     }
 }

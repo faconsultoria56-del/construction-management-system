@@ -41,7 +41,7 @@ public class ProjectResourceService {
     }
 
     @Transactional
-    public ProjectResourceResponse update(Long id, @Valid ProjectResourceUpdateRequest request) {
+    public ProjectResourceResponse update(Integer id, @Valid ProjectResourceUpdateRequest request) {
         ProjectResource resource = resourceRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Recurso não encontrado com o id: " + id));
 
@@ -60,20 +60,20 @@ public class ProjectResourceService {
     }
 
     @Transactional
-    public void delete(Long id) {
+    public void delete(Integer id) {
         if (!resourceRepository.existsById(id)) {
             throw new ResourceNotFoundException("Recurso não encontrado com o id: " + id);
         }
         resourceRepository.deleteById(id);
     }
 
-    public ProjectResourceResponse findById(Long id) {
+    public ProjectResourceResponse findById(Integer id) {
         ProjectResource resource = resourceRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Recurso não encontrado com o id: " + id));
         return resourceMapper.toResponse(resource);
     }
 
-    public List<ProjectResourceResponse> listByProject(Long projectId) {
+    public List<ProjectResourceResponse> listByProject(Integer projectId) {
         if (!projectRepository.existsById(projectId)) {
             throw new ResourceNotFoundException("Projeto não encontrado com o id: " + projectId);
         }

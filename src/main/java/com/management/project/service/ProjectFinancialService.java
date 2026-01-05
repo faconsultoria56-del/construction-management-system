@@ -20,7 +20,7 @@ public class ProjectFinancialService {
     private FinancialEntryRepository financialEntryRepository;
 
     @Transactional(readOnly = true)
-    public ProjectFinancialSummaryDTO getProjectFinancialSummary(Long projectId) {
+    public ProjectFinancialSummaryDTO getProjectFinancialSummary(Integer projectId) {
         BigDecimal resourceBudget = Optional.ofNullable(projectResourceRepository.sumTotalCostByProjectId(projectId))
                 .orElse(BigDecimal.ZERO);
 

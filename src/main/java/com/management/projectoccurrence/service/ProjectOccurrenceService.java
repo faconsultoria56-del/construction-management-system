@@ -50,7 +50,7 @@ public class ProjectOccurrenceService {
     }
 
     @Transactional
-    public ProjectOccurrenceResponse update(Long id, ProjectOccurrenceUpdateRequest request) {
+    public ProjectOccurrenceResponse update(Integer id, ProjectOccurrenceUpdateRequest request) {
         ProjectOccurrence occurrence = projectOccurrenceRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Occurrence not found with id: " + id));
 
@@ -65,7 +65,7 @@ public class ProjectOccurrenceService {
     }
 
     @Transactional
-    public void delete(Long id) {
+    public void delete(Integer id) {
         if (!projectOccurrenceRepository.existsById(id)) {
             throw new ResourceNotFoundException("Occurrence not found with id: " + id);
         }
@@ -73,7 +73,7 @@ public class ProjectOccurrenceService {
     }
 
     @Transactional(readOnly = true)
-    public List<ProjectOccurrenceResponse> listByProject(Long projectId) {
+    public List<ProjectOccurrenceResponse> listByProject(Integer projectId) {
         if (!projectRepository.existsById(projectId)) {
             throw new ResourceNotFoundException("Project not found with id: " + projectId);
         }
@@ -82,7 +82,7 @@ public class ProjectOccurrenceService {
                 .collect(Collectors.toList());
     }
      @Transactional(readOnly = true)
-    public ProjectOccurrenceResponse findById(Long id) {
+    public ProjectOccurrenceResponse findById(Integer id) {
         ProjectOccurrence occurrence = projectOccurrenceRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Occurrence not found with id: " + id));
         return projectOccurrenceMapper.toResponse(occurrence);

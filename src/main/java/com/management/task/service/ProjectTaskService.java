@@ -56,7 +56,7 @@ public class ProjectTaskService {
     }
 
     @Transactional
-    public ProjectTaskResponse updateTask(Long id, @Valid ProjectTaskUpdateRequest request) {
+    public ProjectTaskResponse updateTask(Integer id, @Valid ProjectTaskUpdateRequest request) {
         ProjectTask task = taskRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Tarefa não encontrada com o id: " + id));
 
@@ -82,7 +82,7 @@ public class ProjectTaskService {
         return taskMapper.toResponse(updatedTask);
     }
 
-    public List<ProjectTaskResponse> listByProject(Long projectId) {
+    public List<ProjectTaskResponse> listByProject(Integer projectId) {
         if (!projectRepository.existsById(projectId)) {
             throw new ResourceNotFoundException("Projeto não encontrado com o id: " + projectId);
         }
@@ -91,14 +91,14 @@ public class ProjectTaskService {
                 .collect(Collectors.toList());
     }
 
-    public ProjectTaskResponse findTaskById(Long id) {
+    public ProjectTaskResponse findTaskById(Integer id) {
         ProjectTask task = taskRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Tarefa não encontrada com o id: " + id));
         return taskMapper.toResponse(task);
     }
 
     @Transactional
-    public void deleteTask(Long id) {
+    public void deleteTask(Integer id) {
         if (!taskRepository.existsById(id)) {
             throw new ResourceNotFoundException("Tarefa não encontrada com o id: " + id);
         }

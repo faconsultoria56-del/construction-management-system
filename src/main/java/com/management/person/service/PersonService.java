@@ -2,10 +2,6 @@ package com.management.person.service;
 
 import com.management.address.model.Address;
 import com.management.address.repository.AddressRepository;
-import com.management.city.model.City;
-import com.management.city.model.State;
-import com.management.city.repository.CityRepository;
-import com.management.city.repository.StateRepository;
 import com.management.company.dto.CnpjResponseDTO;
 import com.management.company.model.Company;
 import com.management.company.model.CompanyMember;
@@ -43,14 +39,11 @@ public class PersonService {
 
     private static final Logger log = LoggerFactory.getLogger(PersonService.class);
 
-
     private final PersonRepository personRepository;
     private final CompanyRepository companyRepository;
     private final CompanyMemberRepository companyMemberRepository;
     private final BrasilApiService brasilApiService;
     private final AddressRepository addressRepository;
-    private final CityRepository cityRepository;
-    private final StateRepository stateRepository;
     private final DocumentTypeRepository documentTypeRepository;
     private final PersonDocumentRepository personDocumentRepository;
     private final UserAccountRepository userAccountRepository;
@@ -59,14 +52,12 @@ public class PersonService {
     private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
 
-    public PersonService(PersonRepository personRepository, CompanyRepository companyRepository, CompanyMemberRepository companyMemberRepository, BrasilApiService brasilApiService, AddressRepository addressRepository, CityRepository cityRepository, StateRepository stateRepository, DocumentTypeRepository documentTypeRepository, PersonDocumentRepository personDocumentRepository, UserAccountRepository userAccountRepository, RoleRepository roleRepository, PersonRoleRepository personRoleRepository, PasswordEncoder passwordEncoder, ModelMapper modelMapper) {
+    public PersonService(PersonRepository personRepository, CompanyRepository companyRepository, CompanyMemberRepository companyMemberRepository, BrasilApiService brasilApiService, AddressRepository addressRepository, DocumentTypeRepository documentTypeRepository, PersonDocumentRepository personDocumentRepository, UserAccountRepository userAccountRepository, RoleRepository roleRepository, PersonRoleRepository personRoleRepository, PasswordEncoder passwordEncoder, ModelMapper modelMapper) {
         this.personRepository = personRepository;
         this.companyRepository = companyRepository;
         this.companyMemberRepository = companyMemberRepository;
         this.brasilApiService = brasilApiService;
         this.addressRepository = addressRepository;
-        this.cityRepository = cityRepository;
-        this.stateRepository = stateRepository;
         this.documentTypeRepository = documentTypeRepository;
         this.personDocumentRepository = personDocumentRepository;
         this.userAccountRepository = userAccountRepository;
@@ -95,7 +86,6 @@ public class PersonService {
         userAccount.setEmail(createDTO.getEmail());
         userAccount.setPasswordHash(passwordEncoder.encode(createDTO.getPassword()));
         userAccount.setPerson(savedPerson);
-        userAccountRepository.save(userAccount);
 
         Role ownerRole = roleRepository.findByName("Owner")
                 .orElseThrow(() -> new IllegalStateException("Owner role not found"));
@@ -127,25 +117,16 @@ public class PersonService {
                         address.setComplement(cnpjData.getComplemento());
                         address.setNeighborhood(cnpjData.getBairro());
                         address.setZipCode(cnpjData.getCep());
-
-                        State state = stateRepository.findByUf(cnpjData.getUf()).orElseGet(() -> {
-                            State newState = new State();
-                            newState.setUf(cnpjData.getUf());
-                            return stateRepository.save(newState);
-                        });
-
-                        City city = cityRepository.findByNameAndState(cnpjData.getMunicipio(), state).orElseGet(() -> {
-                            City newCity = new City();
-                            newCity.setName(cnpjData.getMunicipio());
-                            newCity.setState(state);
-                            return cityRepository.save(newCity);
-                        });
-                        address.setCity(city);
+                        address.setCityName(cnpjData.getMunicipio());
+                        address.setStateName(cnpjData.getUf());
                         Address savedAddress = addressRepository.save(address);
                         company.setAddress(savedAddress);
                     }
 
                     Company savedCompany = companyRepository.save(company);
+
+                    userAccount.setCompany(savedCompany);
+                    userAccountRepository.save(userAccount);
 
                     CompanyMember member = new CompanyMember();
                     member.setPerson(savedPerson);
@@ -155,8 +136,10 @@ public class PersonService {
                 }
             } catch (Exception e) {
                 log.error("Failed to retrieve or process CNPJ data for {}: {}", createDTO.getCnpj(), e.getMessage());
-                // Do not rethrow, allowing person creation to succeed
+                throw new RuntimeException("Failed to process company information from CNPJ.", e);
             }
+        } else {
+             throw new IllegalStateException("Cannot create a user without a company CNPJ.");
         }
 
         // 5. Assign 'Owner' role

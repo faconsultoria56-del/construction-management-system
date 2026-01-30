@@ -1,11 +1,7 @@
 package com.management.address.model;
 
-import com.management.city.model.City;
-import com.management.company.model.Company;
-import com.management.person.model.Person;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Table(name = "address", schema = "management")
@@ -14,29 +10,20 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false)
     private String street;
-
-    @Column(nullable = false)
     private String number;
-
-    @Column(nullable = false)
     private String neighborhood;
 
-    @Column(nullable = false)
+    @Column(name = "zip_code")
     private String zipCode;
 
     private String complement;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "fk_city", nullable = false)
-    private City city;
+    @Column(name = "city_name")
+    private String cityName;
 
-    @OneToMany(mappedBy = "address")
-    private List<Company> companies;
-
-    @OneToMany(mappedBy = "address")
-    private List<Person> persons;
+    @Column(name = "state_name")
+    private String stateName;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -104,28 +91,20 @@ public class Address {
         this.complement = complement;
     }
 
-    public City getCity() {
-        return city;
+    public String getCityName() {
+        return cityName;
     }
 
-    public void setCity(City city) {
-        this.city = city;
+    public void setCityName(String cityName) {
+        this.cityName = cityName;
     }
 
-    public List<Company> getCompanies() {
-        return companies;
+    public String getStateName() {
+        return stateName;
     }
 
-    public void setCompanies(List<Company> companies) {
-        this.companies = companies;
-    }
-
-    public List<Person> getPersons() {
-        return persons;
-    }
-
-    public void setPersons(List<Person> persons) {
-        this.persons = persons;
+    public void setStateName(String stateName) {
+        this.stateName = stateName;
     }
 
     public LocalDateTime getCreatedAt() {

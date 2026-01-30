@@ -4,8 +4,6 @@ import com.management.address.dto.ProjectAddressRequestDTO;
 import com.management.address.dto.ProjectAddressResponseDTO;
 import com.management.address.model.Address;
 import com.management.address.repository.AddressRepository;
-import com.management.city.model.City;
-import com.management.city.repository.CityRepository;
 import com.management.exception.ResourceNotFoundException;
 import com.management.project.model.Project;
 import com.management.project.repository.ProjectRepository;
@@ -18,9 +16,6 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -39,55 +34,53 @@ public class ProjectAddressServiceTest {
     @Mock
     private AddressRepository addressRepository;
 
-    @Mock
-    private CityRepository cityRepository;
-
     @Spy
     private ModelMapper modelMapper;
 
     private Project project;
     private Address address;
-    private City city;
     private ProjectAddressRequestDTO requestDTO;
 
     @BeforeEach
     void setUp() {
-        city = new City();
-        city.setId(1);
-        city.setName("Test City");
-
         address = new Address();
-        address.setId(1);
+        address.setId(1L);
         address.setStreet("Test Street");
-        address.setCity(city);
+        address.setCityName("Test City");
+        address.setStateName("Test State");
+        address.setCountryName("Test Country");
 
         project = new Project();
-        project.setId(1);
+        project.setId(1L);
         project.setAddress(address);
 
         requestDTO = new ProjectAddressRequestDTO();
-        requestDTO.setCityId(1);
         requestDTO.setStreet("Test Street");
+        requestDTO.setCityName("Test City");
+        requestDTO.setStateName("Test State");
+        requestDTO.setCountryName("Test Country");
     }
 
     @Test
     void testCreateProjectAddress() {
-        when(projectRepository.findById(1)).thenReturn(Optional.of(project));
-        when(cityRepository.findById(1)).thenReturn(Optional.of(city));
+        when(projectRepository.findById(1L)).thenReturn(Optional.of(new Project()));
+        when(addressRepository.save(any(Address.class))).thenReturn(address);
         when(projectRepository.save(any(Project.class))).thenReturn(project);
 
-        ProjectAddressResponseDTO responseDTO = projectAddressService.createProjectAddress(1, requestDTO);
+        ProjectAddressResponseDTO responseDTO = projectAddressService.createProjectAddress(1L, requestDTO);
 
         assertNotNull(responseDTO);
         assertEquals("Test Street", responseDTO.getStreet());
-        verify(projectRepository, times(1)).save(project);
+        assertEquals("Test City", responseDTO.getCityName());
+        verify(projectRepository, times(1)).save(any(Project.class));
+        verify(addressRepository, times(1)).save(any(Address.class));
     }
 
     @Test
     void testGetProjectAddress() {
-        when(projectRepository.findById(1)).thenReturn(Optional.of(project));
+        when(projectRepository.findById(1L)).thenReturn(Optional.of(project));
 
-        ProjectAddressResponseDTO responseDTO = projectAddressService.getProjectAddress(1);
+        ProjectAddressResponseDTO responseDTO = projectAddressService.getProjectAddress(1L);
 
         assertNotNull(responseDTO);
         assertEquals("Test Street", responseDTO.getStreet());
@@ -95,22 +88,21 @@ public class ProjectAddressServiceTest {
 
     @Test
     void testGetProjectAddress_NotFound() {
-        Project project = new Project();
-        project.setAddress(null);
-        when(projectRepository.findById(1)).thenReturn(Optional.of(project));
+        Project projectWithoutAddress = new Project();
+        projectWithoutAddress.setAddress(null);
+        when(projectRepository.findById(1L)).thenReturn(Optional.of(projectWithoutAddress));
 
         assertThrows(ResourceNotFoundException.class, () -> {
-            projectAddressService.getProjectAddress(1);
+            projectAddressService.getProjectAddress(1L);
         });
     }
 
     @Test
     void testUpdateProjectAddress() {
-        when(projectRepository.findById(1)).thenReturn(Optional.of(project));
-        when(cityRepository.findById(1)).thenReturn(Optional.of(city));
+        when(projectRepository.findById(1L)).thenReturn(Optional.of(project));
         when(addressRepository.save(any(Address.class))).thenReturn(address);
 
-        ProjectAddressResponseDTO responseDTO = projectAddressService.updateProjectAddress(1, requestDTO);
+        ProjectAddressResponseDTO responseDTO = projectAddressService.updateProjectAddress(1L, requestDTO);
 
         assertNotNull(responseDTO);
         assertEquals("Test Street", responseDTO.getStreet());
@@ -119,12 +111,13 @@ public class ProjectAddressServiceTest {
 
     @Test
     void testDeleteProjectAddress() {
-        when(projectRepository.findById(1)).thenReturn(Optional.of(project));
-        when(projectRepository.save(any(Project.class))).thenReturn(project);
+        when(projectRepository.findById(1L)).thenReturn(Optional.of(project));
+        doNothing().when(addressRepository).delete(any(Address.class));
 
-        projectAddressService.deleteProjectAddress(1);
+        projectAddressService.deleteProjectAddress(1L);
 
         verify(projectRepository, times(1)).save(project);
+        verify(addressRepository, times(1)).delete(address);
         assertNull(project.getAddress());
     }
 }

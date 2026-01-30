@@ -12,7 +12,7 @@ public class FinancialEntryRequestDTO {
     private LocalDate entryDate;
     private Boolean isPaid;
     private LocalDate dueDate;
-    private Integer projectId;
-    private Integer costCenterId;
-    private Integer personId;
+    private Long projectId;
+    private Long costCenterId;
+    private Long personId;
 }

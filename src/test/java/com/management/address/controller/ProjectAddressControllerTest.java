@@ -10,18 +10,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.Collections;
-
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -52,7 +46,10 @@ public class ProjectAddressControllerTest {
         requestDTO.setNumber("123");
         requestDTO.setNeighborhood("Test Neighborhood");
         requestDTO.setZipCode("12345-678");
-        requestDTO.setCityId(1);
+        requestDTO.setCityName("Test City");
+        requestDTO.setStateName("Test State");
+        requestDTO.setCountryName("Test Country");
+
 
         responseDTO = new ProjectAddressResponseDTO();
         responseDTO.setStreet("Test Street");
@@ -60,7 +57,7 @@ public class ProjectAddressControllerTest {
 
     @Test
     void testCreateProjectAddress() throws Exception {
-        when(projectAddressService.createProjectAddress(anyInt(), any(ProjectAddressRequestDTO.class))).thenReturn(responseDTO);
+        when(projectAddressService.createProjectAddress(anyLong(), any(ProjectAddressRequestDTO.class))).thenReturn(responseDTO);
 
         mockMvc.perform(post("/api/projects/1/address")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -71,7 +68,7 @@ public class ProjectAddressControllerTest {
 
     @Test
     void testGetProjectAddress() throws Exception {
-        when(projectAddressService.getProjectAddress(anyInt())).thenReturn(responseDTO);
+        when(projectAddressService.getProjectAddress(anyLong())).thenReturn(responseDTO);
 
         mockMvc.perform(get("/api/projects/1/address"))
                 .andExpect(status().isOk())
@@ -80,7 +77,7 @@ public class ProjectAddressControllerTest {
 
     @Test
     void testUpdateProjectAddress() throws Exception {
-        when(projectAddressService.updateProjectAddress(anyInt(), any(ProjectAddressRequestDTO.class))).thenReturn(responseDTO);
+        when(projectAddressService.updateProjectAddress(anyLong(), any(ProjectAddressRequestDTO.class))).thenReturn(responseDTO);
 
         mockMvc.perform(put("/api/projects/1/address")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -91,7 +88,7 @@ public class ProjectAddressControllerTest {
 
     @Test
     void testDeleteProjectAddress() throws Exception {
-        doNothing().when(projectAddressService).deleteProjectAddress(anyInt());
+        doNothing().when(projectAddressService).deleteProjectAddress(anyLong());
 
         mockMvc.perform(delete("/api/projects/1/address"))
                 .andExpect(status().isNoContent());
